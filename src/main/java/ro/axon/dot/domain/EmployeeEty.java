@@ -64,9 +64,9 @@ public class EmployeeEty extends SrgKeyEntityTml<UID>{
     @JoinColumn(name = "TEAM_ID", nullable = false)
     private TeamEty team;
 
-    @Version
-    @Column(name = "V", nullable = false)
-    private int version;
+//    @Version
+//    @Column(name = "V", nullable = false)
+//    private int version;
 
     @PrePersist
     protected void onCreate() {
