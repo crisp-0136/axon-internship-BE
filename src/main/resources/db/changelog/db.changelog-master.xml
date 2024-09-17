@@ -220,4 +220,11 @@
                   tableName="LEGALLY_DAYS_OFF"/>
     </changeSet>
 
+    <changeSet author="andrei" id="003">
+        <comment>Initial Load Employee details</comment>
+        <loadData file="includes/data-employee-initial-load.csv" tableName="EMPLOYEE"
+                  relativeToChangelogFile="true"/>
+    </changeSet>
+
+
 </databaseChangeLog>
