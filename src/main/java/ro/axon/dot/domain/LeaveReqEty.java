@@ -2,12 +2,12 @@ package ro.axon.dot.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import ro.axon.dot.domain.Enums.LeaveRequestType;
-import ro.axon.dot.domain.Enums.LeaveRequestStatus;
-import ro.axon.dot.model.EmployeeListItem;
+import ro.axon.dot.domain.enums.LeaveRequestType;
+import ro.axon.dot.domain.enums.LeaveRequestStatus;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 
 @SequenceGenerator(name="LEAVE_REQUEST_ID_SQ", sequenceName = "LEAVE_REQUEST_ID_SQ", allocationSize = 1)
@@ -19,7 +19,6 @@ public class LeaveReqEty extends SrgKeyEntityTml<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LEAVE_REQUEST_ID_SQ")
-    @SequenceGenerator(name = "LEAVE_REQUEST_ID_SQ", sequenceName = "LEAVE_REQUEST_ID_SQ", allocationSize = 1)
     @Column(name = "ID", nullable = false)
     private Long id;
 
@@ -40,10 +39,10 @@ public class LeaveReqEty extends SrgKeyEntityTml<Long> {
     private Instant mdfTms;
 
     @Column(name = "START_DATE")
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "END_DATE")
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name = "NO_DAYS")
     private int noDays;
@@ -62,13 +61,8 @@ public class LeaveReqEty extends SrgKeyEntityTml<Long> {
     @Column(name = "REJECT_REASON")
     private String rejectReason;
 
-//    @Version
-//    @Column(name = "V", nullable = false)
-//    private int version;
-
-
     @Override
     protected Class<? extends SrgKeyEntityTml<Long>> entityRefClass() {
-        return null;
+        return LeaveReqEty.class;
     }
 }

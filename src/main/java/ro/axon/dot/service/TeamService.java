@@ -2,7 +2,7 @@ package ro.axon.dot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ro.axon.dot.domain.TeamRepository;
+import ro.axon.dot.domain.repositories.TeamRepository;
 import ro.axon.dot.mapper.TeamMapper;
 import ro.axon.dot.model.TeamDetailsList;
 

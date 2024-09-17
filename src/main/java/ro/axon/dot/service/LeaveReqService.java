@@ -2,7 +2,7 @@ package ro.axon.dot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ro.axon.dot.domain.LeaveReqRepository;
+import ro.axon.dot.domain.repositories.LeaveReqRepository;
 
 
 @Service

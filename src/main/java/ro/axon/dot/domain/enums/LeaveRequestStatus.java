@@ -1,7 +1,7 @@
-package ro.axon.dot.domain.Enums;
+package ro.axon.dot.domain.enums;
 
 public enum LeaveRequestStatus {
     PENDING,
-    ACCEPTED,
+    APPROVED,
     REJECTED,
 }

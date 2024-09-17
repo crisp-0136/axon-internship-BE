@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -16,8 +17,8 @@ import java.util.Date;
 public class LegallyDaysOffEty {
 
     @Id
-    @Column(name = "DATE", nullable = true)
-    private Date date;
+    @Column(name = "DATE", nullable = false)
+    private LocalDate date;
 
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;

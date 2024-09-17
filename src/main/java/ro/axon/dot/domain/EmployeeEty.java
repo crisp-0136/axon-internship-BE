@@ -2,19 +2,27 @@ package ro.axon.dot.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
+import ro.axon.dot.domain.enums.Status;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = "EMPLOYEE_ID_SQ", sequenceName = "EMPLOYEE_ID_SQ", allocationSize = 1)
 @Table(name = "EMPLOYEE")
-public class EmployeeEty {
+public class EmployeeEty extends SrgKeyEntityTml<String> {
 
     @Id
-    @Column(name = "EMPLOYEE_ID", nullable = false, length = 255)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.uuid.UuidGenerator")
+    @Column(name = "EMPLOYEE_ID", nullable = false, length = 36)
     private String employeeId;
 
     @Column(name = "USERNAME", nullable = false, length = 255)
@@ -48,19 +56,31 @@ public class EmployeeEty {
     private String role = "USER";
 
     @Column(name = "STATUS", nullable = false, length = 255)
-    private String status;
+    private Status status;
 
     @Column(name = "CONTRACT_START_DATE", nullable = false)
-    private Date contractStartDate;
+    private LocalDate contractStartDate;
 
     @Column(name = "CONTRACT_END_DATE")
-    private Date contractEndDate;
+    private LocalDate contractEndDate;
 
     @ManyToOne
     @JoinColumn(name = "TEAM_ID", nullable = false, foreignKey = @ForeignKey(name = "EMPLOYEE_TEAM_FK"))
     private TeamEty team;
 
-    @Version
-    @Column(name = "V", nullable = false)
-    private int version;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<LeaveReqEty> leaveRequests = new HashSet<>();
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EmpYearlyDaysOffEty> yearlyDaysOffRecords = new HashSet<>();
+
+    @Override
+    public String getId() {
+        return this.employeeId;
+    }
+
+    @Override
+    protected Class<? extends SrgKeyEntityTml<String>> entityRefClass() {
+        return EmployeeEty.class;
+    }
 }

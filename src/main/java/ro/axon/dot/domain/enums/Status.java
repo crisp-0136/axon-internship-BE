@@ -1,4 +1,4 @@
-package ro.axon.dot.domain.Enums;
+package ro.axon.dot.domain.enums;
 
 public enum Status {
     ACTIVE,
