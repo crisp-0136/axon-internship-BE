@@ -1,8 +1,9 @@
 package ro.axon.dot.model;
 
 import lombok.Data;
-import ro.axon.dot.domain.Enums.Status;
-import ro.axon.dot.domain.Enums.Type;
+import ro.axon.dot.domain.Enums.LeaveRequestStatus;
+import ro.axon.dot.domain.Enums.LeaveRequestType;
+
 import java.time.Instant;
 import java.util.Date;
 
@@ -19,8 +20,8 @@ public class LeaveReqItem {
     private Date startDate;
     private Date endDate;
     private int noDays;
-    private Type type;
-    private Status status;
+    private LeaveRequestType leaveRequestType;
+    private LeaveRequestStatus leaveRequestStatus;
     private String description;
     private String rejectReason;
 }

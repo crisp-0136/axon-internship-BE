@@ -1,9 +1,9 @@
 package ro.axon.dot.domain;
 
-import liquibase.pro.packaged.C;
 import lombok.Getter;
 import lombok.Setter;
-import ro.axon.dot.domain.Enums.Status;
+import org.hibernate.annotations.GenericGenerator;
+import ro.axon.dot.domain.Enums.LeaveRequestStatus;
 
 import javax.persistence.*;
 import java.rmi.server.UID;
@@ -18,6 +18,8 @@ import java.util.Date;
 public class EmployeeEty extends SrgKeyEntityTml<UID>{
 
     @Id
+    @GeneratedValue(generator = "employee-uuid")
+    @GenericGenerator(name = "employee-uuid", strategy = "uuid2")
     @Column(name = "EMPLOYEE_ID", nullable = false)
     private UID id;
 
@@ -51,8 +53,9 @@ public class EmployeeEty extends SrgKeyEntityTml<UID>{
     @Column(name = "ROLE", nullable = false)
     private String role = "USER";
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "STATUS", nullable = false)
-    private Status status;
+    private LeaveRequestStatus status;
 
     @Column(name = "CONTRACT_START_DATE", nullable = false)
     private Date contractStartDate;

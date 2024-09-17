@@ -2,8 +2,9 @@ package ro.axon.dot.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import ro.axon.dot.domain.Enums.Type;
-import ro.axon.dot.domain.Enums.Status;
+import ro.axon.dot.domain.Enums.LeaveRequestType;
+import ro.axon.dot.domain.Enums.LeaveRequestStatus;
+import ro.axon.dot.model.EmployeeListItem;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -22,7 +23,7 @@ public class LeaveReqEty extends SrgKeyEntityTml<Long> {
 
     //TODO: Change the type to Employee, add relationship databases
     @Column(name = "EMPLOYEE_ID")
-    private String employeeId;
+    private EmployeeListItem employeeId;
 
     @Column(name = "CRT_USR")
     private String crtUsr;
@@ -45,17 +46,23 @@ public class LeaveReqEty extends SrgKeyEntityTml<Long> {
     @Column(name = "NO_DAYS")
     private int noDays;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "TYPE")
-    private Type type;
+    private LeaveRequestType type;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
-    private Status status;
+    private LeaveRequestStatus status;
 
     @Column(name = "DESCRIPTION")
     private String description;
 
     @Column(name = "REJECT_REASON")
     private String rejectReason;
+
+//    @Version
+//    @Column(name = "V", nullable = false)
+//    private int version;
 
 
     @Override

@@ -3,6 +3,7 @@ package ro.axon.dot.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import ro.axon.dot.domain.Enums.EmpYearlyDaysOffHistType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,8 +25,9 @@ public class EmpYearlyDaysOffHist {
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "TYPE", nullable = false)
-    private String type;
+    private EmpYearlyDaysOffHistType type;
 
     @Column(name = "CRT_USR", nullable = false)
     private String createdBy;
