@@ -12,11 +12,11 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name= "EMP_YEARLY_DAYS_OFF")
+@SequenceGenerator(name = "EMP_YEARLY_DAYS_OFF_ID_SQ", sequenceName = "EMP_YEARLY_DAYS_OFF_ID_SQ", allocationSize = 1)
 public class EmpYearlyDaysOffEty {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EMP_YEARLY_DAYS_OFF_ID_SQ")
-    @Column(name = "ID", nullable = false)
     private Long id;
 
     @ManyToOne
