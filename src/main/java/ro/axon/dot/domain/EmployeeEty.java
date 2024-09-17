@@ -12,7 +12,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "EMPLOYEE")
-public class EmployeeEty {
+public class EmployeeEty extends SrgKeyEntityTml<String> {
 
     @Id
     @GeneratedValue(generator = "employee-uuid")
@@ -50,6 +50,7 @@ public class EmployeeEty {
     @Column(name = "ROLE", nullable = false, length = 255)
     private String role = "USER";
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "STATUS", nullable = false, length = 255)
     private String status;
 
@@ -63,7 +64,13 @@ public class EmployeeEty {
     @JoinColumn(name = "TEAM_ID", nullable = false, foreignKey = @ForeignKey(name = "EMPLOYEE_TEAM_FK"))
     private TeamEty team;
 
-    @Version
-    @Column(name = "V", nullable = false)
-    private int version;
+    @Override
+    public String getId() {
+        return this.employeeId;
+    }
+
+    @Override
+    protected Class<? extends SrgKeyEntityTml<String>> entityRefClass() {
+        return EmployeeEty.class;
+    }
 }
