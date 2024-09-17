@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name= "EMP_YEARLY_DAYS_OFF_Hist")
-public class EmpYearlyDaysOffHist {
+public class EmpYearlyDaysOffHistEty {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EMP_YEARLY_DAYS_OFF_HIST_ID_SQ")
@@ -37,10 +37,10 @@ public class EmpYearlyDaysOffHist {
     @Column(name = "CRT_TMS", nullable = false)
     private LocalDateTime createdTimestamp;
 
-    // Many-to-One relationship with EmpYearlyDaysOff
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EMP_YEARLY_DAYS_OFF_ID", nullable = false)
-    private EmpYearlyDaysOff empYearlyDaysOff;
+    private EmpYearlyDaysOffEty empYearlyDaysOffEty;
 
 
 }

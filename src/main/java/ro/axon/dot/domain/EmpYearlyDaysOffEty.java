@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name= "EMP_YEARLY_DAYS_OFF")
-public class EmpYearlyDaysOff {
+public class EmpYearlyDaysOffEty {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EMP_YEARLY_DAYS_OFF_ID_SQ")
@@ -31,6 +31,6 @@ public class EmpYearlyDaysOff {
 
 
     @OneToMany(mappedBy = "empYearlyDaysOff", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EmpYearlyDaysOffHist> historyRecords;
+    private Set<EmpYearlyDaysOffHistEty> historyRecords;
 
 }
