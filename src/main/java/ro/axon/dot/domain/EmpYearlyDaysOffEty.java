@@ -29,8 +29,6 @@ public class EmpYearlyDaysOffEty {
     @Column(name = "YEAR", nullable = false)
     private Integer year;
 
-
-    @OneToMany(mappedBy = "empYearlyDaysOff", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "empYearlyDaysOffEty", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmpYearlyDaysOffHistEty> historyRecords;
-
 }
