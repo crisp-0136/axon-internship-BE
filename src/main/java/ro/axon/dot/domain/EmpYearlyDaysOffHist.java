@@ -15,12 +15,14 @@ import java.time.LocalDateTime;
 public class EmpYearlyDaysOffHist {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EMP_YEARLY_DAYS_OFF_HIST_ID_SQ")
+    @SequenceGenerator(name = "EMP_YEARLY_DAYS_OFF_HIST_ID_SQ", sequenceName = "EMP_YEARLY_DAYS_OFF_HIST_ID_SQ", allocationSize = 1)
+    @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "NO_DAYS", nullable = false)
-    private Integer noDays;
+    @ManyToOne
+    @JoinColumn(name = "emp_yearly_days_off_id", insertable = false, updatable = false)
+    private EmployeeEty employee;
 
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;

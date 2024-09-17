@@ -9,18 +9,12 @@ import ro.axon.dot.domain.EmployeeEty;
 import ro.axon.dot.model.EmployeeListItem;
 
 import java.rmi.server.UID;
-
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface EmployeeMapper {
 
     EmployeeMapper INSTANCE = Mappers.getMapper(EmployeeMapper.class);
 
-    @Mapping(source = "id", target = "id", qualifiedByName = "uidToString")
-    @Mapping(source = "team.name", target = "teamName") // Map the team's name to teamName
+    @Mapping(source = "employeeId", target = "employeeId")
+    @Mapping(source = "team.name", target = "teamName")
     EmployeeListItem mapEmployeeEtyToEmployeeDto(EmployeeEty employeeEty);
-
-    @Named("uidToString")
-    default String map(UID uid) {
-        return uid != null ? uid.toString() : null;
-    }
 }

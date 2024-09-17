@@ -8,7 +8,7 @@ import java.time.Instant;
 @Data
 public class EmployeeListItem {
 
-    private String id;
+    private String employeeId;
     private String username;
     private String firstName;
     private String lastName;

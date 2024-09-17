@@ -14,9 +14,14 @@ import java.util.Set;
 public class EmpYearlyDaysOff {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EMP_YEARLY_DAYS_OFF_ID_SQ")
+    @SequenceGenerator(name = "EMP_YEARLY_DAYS_OFF_ID_SQ", sequenceName = "EMP_YEARLY_DAYS_OFF_ID_SQ", allocationSize = 1)
+    @Column(name = "ID", nullable = false)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "EMPLOYEE_ID", nullable = false, foreignKey = @ForeignKey(name = "EMP_YEARLY_DAYS_OFF_EMPLOYEE_FK"))
+    private EmployeeEty employee;
 
     @Column(name = "TOTAL_NO_DAYS", nullable = false)
     private Integer totalNoDays;
@@ -24,9 +29,6 @@ public class EmpYearlyDaysOff {
     @Column(name = "YEAR", nullable = false)
     private Integer year;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EMPLOYEE_ID", nullable = false)
-    //private Employee employee;
 
     @OneToMany(mappedBy = "empYearlyDaysOff", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmpYearlyDaysOffHist> historyRecords;

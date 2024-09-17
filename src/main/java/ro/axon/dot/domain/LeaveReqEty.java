@@ -19,11 +19,12 @@ public class LeaveReqEty extends SrgKeyEntityTml<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LEAVE_REQUEST_ID_SQ")
+    @SequenceGenerator(name = "LEAVE_REQUEST_ID_SQ", sequenceName = "LEAVE_REQUEST_ID_SQ", allocationSize = 1)
+    @Column(name = "ID", nullable = false)
     private Long id;
 
-
     @ManyToOne
-    @JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "EMPLOYEE_ID", foreignKey = @ForeignKey(name = "LEAVE_REQUEST_EMPLOYEE_FK"))
+    @JoinColumn(name = "EMPLOYEE_ID", nullable = false, foreignKey = @ForeignKey(name = "LEAVE_REQUEST_EMPLOYEE_FK"))
     private EmployeeEty employee;
 
     @Column(name = "CRT_USR")
