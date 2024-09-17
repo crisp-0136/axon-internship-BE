@@ -12,7 +12,6 @@ import java.util.Date;
 public class LeaveReqItem {
 
     private Long id;
-    //TODO: Change it to Employee type
     private String employeeId;
     private String crtUsr;
     private Instant crtTms;
