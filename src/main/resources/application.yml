@@ -34,3 +34,10 @@ server.port: 8081
 server:
   servlet:
     contextPath: /core
+ro:
+  axon:
+    dot:
+      roles:
+        - USER
+        - HR
+        - TEAM_LEAD
