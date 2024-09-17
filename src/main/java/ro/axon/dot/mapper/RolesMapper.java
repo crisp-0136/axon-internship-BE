@@ -9,5 +9,5 @@ import ro.axon.dot.domain.component.RolesComponent;
 public interface RolesMapper {
     RolesMapper INSTANCE = Mappers.getMapper(RolesMapper.class);
 
-    RolesComponent mapRolesYAMLToRoles(RolesComponent yamlRolesComponent);
+    RolesComponent mapRolesYAMLToRoles(RolesComponent RolesComponent);
 }
