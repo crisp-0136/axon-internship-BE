@@ -14,6 +14,6 @@ public interface TeamMapper {
 
     TeamMapper INSTANCE = Mappers.getMapper(TeamMapper.class);
 
-    TeamDetailsListItem mapTeamEtyToTeamDto(TeamEty teamEty);
+    TeamDetailsListItem  mapTeamEtyToTeamDto(TeamEty teamEty);
 
 }
