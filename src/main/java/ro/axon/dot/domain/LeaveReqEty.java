@@ -24,7 +24,7 @@ public class LeaveReqEty extends SrgKeyEntityTml<Long> {
 
     @ManyToOne
     @JoinColumn(name = "EMPLOYEE_ID", nullable = false, foreignKey = @ForeignKey(name = "LEAVE_REQUEST_EMPLOYEE_FK"))
-    private EmployeeEty employee;
+    private EmployeeEty employeeEty;
 
     @Column(name = "CRT_USR")
     private String crtUsr;

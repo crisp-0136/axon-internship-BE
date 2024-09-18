@@ -21,7 +21,7 @@ public class EmpYearlyDaysOffEty {
 
     @ManyToOne
     @JoinColumn(name = "EMPLOYEE_ID", nullable = false, foreignKey = @ForeignKey(name = "EMP_YEARLY_DAYS_OFF_EMPLOYEE_FK"))
-    private EmployeeEty employee;
+    private EmployeeEty employeeEty;
 
     @Column(name = "TOTAL_NO_DAYS", nullable = false)
     private Integer totalNoDays;
@@ -31,4 +31,5 @@ public class EmpYearlyDaysOffEty {
 
     @OneToMany(mappedBy = "empYearlyDaysOffEty", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmpYearlyDaysOffHistEty> historyRecords = new HashSet<>();
+
 }
