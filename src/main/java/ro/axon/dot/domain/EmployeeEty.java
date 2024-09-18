@@ -3,10 +3,13 @@ package ro.axon.dot.domain;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import ro.axon.dot.domain.enums.Status;
 
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -52,13 +55,19 @@ public class EmployeeEty extends SrgKeyEntityTml<String> {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS", nullable = false, length = 255)
-    private String status;
+    private Status status;
 
     @Column(name = "CONTRACT_START_DATE", nullable = false)
     private Date contractStartDate;
 
     @Column(name = "CONTRACT_END_DATE")
     private Date contractEndDate;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employeeEty", orphanRemoval = true)
+    private Set<LeaveReqEty> leaveRequestEties  = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employeeEty")
+    private Set<EmpYearlyDaysOffEty> empYearlyDaysOffEties = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "TEAM_ID", nullable = false, foreignKey = @ForeignKey(name = "EMPLOYEE_TEAM_FK"))
