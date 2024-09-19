@@ -7,6 +7,7 @@ import ro.axon.dot.domain.enums.Status;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,10 +59,10 @@ public class EmployeeEty extends SrgKeyEntityTml<String> {
     private Status status;
 
     @Column(name = "CONTRACT_START_DATE", nullable = false)
-    private Date contractStartDate;
+    private LocalDate contractStartDate;
 
     @Column(name = "CONTRACT_END_DATE")
-    private Date contractEndDate;
+    private LocalDate contractEndDate;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employeeEty", orphanRemoval = true)
     private Set<LeaveReqEty> leaveRequestEties  = new HashSet<>();
