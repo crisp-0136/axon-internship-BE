@@ -9,6 +9,7 @@ import ro.axon.dot.mapper.TeamMapper;
 import ro.axon.dot.model.TeamDetailsList;
 import ro.axon.dot.model.TeamDetailsListItem;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ public class TeamService {
     private final TeamMapper teamMapper;
 
 
+    @Transactional
     public TeamDetailsList getActiveTeamDetails() {
         List<TeamEty> activeTeams = teamRepository.findAll().stream()
                 .filter(team -> team.getStatus() == Status.ACTIVE)
