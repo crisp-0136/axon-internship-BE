@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import ro.axon.dot.domain.component.RolesComponent;
 import ro.axon.dot.model.RolesList;
 
+import javax.transaction.Transactional;
+
 @Service
 public class RolesService {
 
@@ -13,6 +15,7 @@ public class RolesService {
         this.rolesComponent = rolesComponent;
     }
 
+    @Transactional
     public RolesList getMyRoles() {
         return new RolesList(rolesComponent.getRoles());
     }

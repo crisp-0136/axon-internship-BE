@@ -10,12 +10,12 @@ import ro.axon.dot.service.RolesService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/misc/")
 public class RolesApi {
 
     private final RolesService rolesService;
 
-    @GetMapping("/misc/roles")
+    @GetMapping("/roles")
     public ResponseEntity<RolesList> getRolesService() {
         RolesList rolesList = rolesService.getMyRoles();
         return ResponseEntity.ok(rolesList);
