@@ -8,20 +8,30 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum BusinessErrorCode {
 
-    BAD_REQUEST(
-            formatErrorCode("0003", "400"),
-            "Bad request",
-            HttpStatus.BAD_REQUEST),
-
-    RESOURCE_NOT_FOUND(
+    EMPLOYEE_NOT_FOUND(
             formatErrorCode("0001", "404"),
-            "Resource not found",
+            "Employee was not found",
             HttpStatus.NOT_FOUND),
 
-    INTERNAL_SERVER_ERROR(
-            formatErrorCode("0002", "500"),
-            "Internal server error",
-            HttpStatus.INTERNAL_SERVER_ERROR);
+    INVALID_EMPLOYEE(
+            formatErrorCode("0002", "404"),
+            "Employee data does not correspond to the rules",
+            HttpStatus.BAD_REQUEST),
+
+    REQUEST_NOT_FOUND(
+            formatErrorCode("0003", "404"),
+            "Request was not found",
+            HttpStatus.NOT_FOUND),
+
+    INVALID_REQUEST(
+            formatErrorCode("0004", "400"),
+            "Request data does not correspond to the rules",
+            HttpStatus.BAD_REQUEST),
+
+    TEAM_NOT_FOUND(
+            formatErrorCode("0005", "404"),
+            "Team was not found",
+            HttpStatus.NOT_FOUND);
 
     private final String errorCode;
     private final String devMsg;
