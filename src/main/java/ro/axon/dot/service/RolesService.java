@@ -3,8 +3,8 @@ package ro.axon.dot.service;
 import org.springframework.stereotype.Service;
 import ro.axon.dot.domain.component.RolesComponent;
 import ro.axon.dot.model.RolesList;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 
 @Service
 public class RolesService {
@@ -15,7 +15,7 @@ public class RolesService {
         this.rolesComponent = rolesComponent;
     }
 
-    @Transactional
+    @Transactional(readOnly=true)
     public RolesList getMyRoles() {
         return new RolesList(rolesComponent.getRoles());
     }
