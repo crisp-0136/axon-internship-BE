@@ -16,7 +16,13 @@ public enum BusinessErrorCode {
     TEAM_NOT_FOUND(
             formatErrorCode("0002", "404"),
             "Team was not found",
-            HttpStatus.NOT_FOUND);
+            HttpStatus.NOT_FOUND),
+
+    EMPLOYEE_INACTIVATION_FAILURE(
+            formatErrorCode("0003", "400"),
+            "Inactivation cannot be performed. Employee was not found.",
+            HttpStatus.BAD_REQUEST);
+
 
     private final String errorCode;
     private final String devMsg;

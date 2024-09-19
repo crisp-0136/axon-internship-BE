@@ -20,12 +20,8 @@ public class EmployeeApi {
     @PatchMapping("/{employeeId}/inactivate")
     public ResponseEntity<Void> inactivateEmployee(@PathVariable String employeeId) {
 
-        boolean isInactivated = employeeService.inactivateEmployee(employeeId);
+        employeeService.inactivateEmployee(employeeId);
 
-        if (isInactivated) {
-            return ResponseEntity.noContent().build();
-        } else {
-            throw new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND);
-        }
+        return ResponseEntity.noContent().build();
     }
 }
