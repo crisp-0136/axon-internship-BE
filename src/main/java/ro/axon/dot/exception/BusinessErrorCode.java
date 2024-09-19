@@ -1,11 +1,11 @@
 package ro.axon.dot.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum BusinessErrorCode {
 
     EMPLOYEE_NOT_FOUND(
@@ -14,7 +14,7 @@ public enum BusinessErrorCode {
             HttpStatus.NOT_FOUND),
 
     INVALID_EMPLOYEE(
-            formatErrorCode("0002", "404"),
+            formatErrorCode("0002", "400"),
             "Employee data does not correspond to the rules",
             HttpStatus.BAD_REQUEST),
 

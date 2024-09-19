@@ -1,6 +1,5 @@
 package ro.axon.dot.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.Serial;
@@ -12,7 +11,7 @@ public class BusinessException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private BusinessErrorCode businessErrorCode;
+    private final BusinessErrorCode businessErrorCode;
     private Map<String, Object> contextVariables;
 
     public BusinessException(BusinessErrorCode businessErrorCode) {
