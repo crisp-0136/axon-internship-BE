@@ -25,9 +25,7 @@ public class TeamService {
 
     @Transactional(readOnly = true)
     public TeamDetailsList getActiveTeamDetails() {
-        List<TeamEty> activeTeams = teamRepository.findAll().stream()
-                .filter(team -> team.getStatus() == Status.ACTIVE)
-                .toList();
+        List<TeamEty> activeTeams = teamRepository.findByStatus(Status.ACTIVE);
 
         List<TeamDetailsListItem> teamDetails = activeTeams.stream()
                 .map(teamMapper::mapTeamEtyToTeamDto)

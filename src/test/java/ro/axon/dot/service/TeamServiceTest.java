@@ -11,6 +11,7 @@ import ro.axon.dot.domain.repositories.TeamRepository;
 import ro.axon.dot.mapper.TeamMapper;
 import ro.axon.dot.model.TeamDetailsList;
 import ro.axon.dot.model.TeamDetailsListItem;
+import ro.axon.dot.service.TeamService;
 
 import java.util.List;
 
@@ -36,29 +37,25 @@ class TeamServiceTest {
 
     @Test
     void getActiveTeamDetails_shouldReturnOnlyActiveTeams() {
-        // Setup mock data
+        // Setup the active team
         TeamEty activeTeam = new TeamEty();
         activeTeam.setStatus(Status.ACTIVE);
         activeTeam.setName("Active Team");
 
-        TeamEty inactiveTeam = new TeamEty();
-        inactiveTeam.setStatus(Status.INACTIVE);
-        inactiveTeam.setName("Inactive Team");
+        // Mock the repository to return only active teams
+        when(teamRepository.findByStatus(Status.ACTIVE)).thenReturn(List.of(activeTeam));
 
-        // Mock repository call
-        when(teamRepository.findAll()).thenReturn(List.of(activeTeam, inactiveTeam));
-
-        // Mock mapper call
+        // Setup the mapped DTO
         TeamDetailsListItem activeTeamDto = new TeamDetailsListItem();
         activeTeamDto.setName("Active Team");
 
+        // Mock the mapper to return the DTO for the active team
         when(teamMapper.mapTeamEtyToTeamDto(activeTeam)).thenReturn(activeTeamDto);
-        when(teamMapper.mapTeamEtyToTeamDto(inactiveTeam)).thenReturn(null); // Ensures inactive team is not included
 
-        // Call the method
+        // Call the service method
         TeamDetailsList result = teamService.getActiveTeamDetails();
 
-        // Check the results
+        // Assert the results
         List<TeamDetailsListItem> items = result.getItems();
         assertFalse(items.isEmpty());
         assertEquals(1, items.size());
