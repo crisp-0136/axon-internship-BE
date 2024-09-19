@@ -2,10 +2,15 @@ package ro.axon.dot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ro.axon.dot.domain.TeamEty;
+import ro.axon.dot.domain.enums.Status;
 import ro.axon.dot.domain.repositories.TeamRepository;
 import ro.axon.dot.mapper.TeamMapper;
 import ro.axon.dot.model.TeamDetailsList;
+import ro.axon.dot.model.TeamDetailsListItem;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -13,12 +18,22 @@ import java.util.stream.Collectors;
 public class TeamService {
 
     private final TeamRepository teamRepository;
+    private final TeamMapper teamMapper;
 
-    public TeamDetailsList getTeamsDetails() {
-        var teamDetailsList = new TeamDetailsList();
-        teamDetailsList.setItems(teamRepository.findAll().stream().map(TeamMapper.INSTANCE::mapTeamEtyToTeamDto)
-                .collect(Collectors.toList()));
-        return teamDetailsList;
+
+    public TeamDetailsList getActiveTeamDetails() {
+        List<TeamEty> activeTeams = teamRepository.findAll().stream()
+                .filter(team -> team.getStatus() == Status.ACTIVE)
+                .toList();
+
+        List<TeamDetailsListItem> teamDetails = activeTeams.stream()
+                .map(teamMapper::mapTeamEtyToTeamDto)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        return new TeamDetailsList(teamDetails);
     }
+
+
 
 }
