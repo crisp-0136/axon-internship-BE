@@ -1,15 +1,25 @@
 package ro.axon.dot.domain.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import ro.axon.dot.domain.EmployeeEty;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import ro.axon.dot.domain.LegallyDaysOffEty;
 
-import java.rmi.server.UID;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 
+@Repository
 public interface LegallyDaysOffRepository extends
         JpaRepository<LegallyDaysOffEty, LocalDate>,
         QuerydslPredicateExecutor<LegallyDaysOffEty>{
+
+    // Custom query to filter by year (years should be in string format like "YYYY")
+    @Query("SELECT l FROM LegallyDaysOffEty l WHERE TO_CHAR(l.date, 'YYYY') IN :years")
+    List<LegallyDaysOffEty> findByYearIn(@Param("years") List<String> years);
+
+    // Custom query to filter by periods (periods should be in "YYYY-MM" format)
+    @Query("SELECT l FROM LegallyDaysOffEty l WHERE TO_CHAR(l.date, 'YYYY-MM') IN :periods")
+    List<LegallyDaysOffEty> findByPeriodIn(@Param("periods") List<String> periods);
 }
