@@ -21,8 +21,6 @@ import javax.validation.Valid;
 public class EmployeeApi {
 
     private final EmployeeService employeeService;
-    private final TeamRepository teamRepository;
-    private final EmployeeRepository employeeRepository;
 
     @PatchMapping("/{employeeId}/inactivate")
     public ResponseEntity<Void> inactivateEmployee(@PathVariable String employeeId) {

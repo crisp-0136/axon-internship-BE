@@ -94,6 +94,8 @@ public class EmployeeService {
         historyEntry.setCrtTms(Instant.now());
         historyEntry.setEmpYearlyDaysOffEty(empYearlyDaysOffEty);
 
+        empYearlyDaysOffEty.getHistoryRecords().add(historyEntry);
+
         employeeRepository.save(employeeEty);
 
     }
