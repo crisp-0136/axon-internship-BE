@@ -9,24 +9,34 @@ import org.springframework.http.HttpStatus;
 public enum BusinessErrorCode {
 
     EMPLOYEE_NOT_FOUND(
-            formatErrorCode("0001", "404"),
+            formatErrorCode("0001", "400"),
             "Employee was not found",
-            HttpStatus.NOT_FOUND),
+            HttpStatus.BAD_REQUEST),
 
     TEAM_NOT_FOUND(
             formatErrorCode("0002", "404"),
             "Team was not found",
             HttpStatus.NOT_FOUND),
 
-    EMPLOYEE_INACTIVATION_FAILURE(
+    LEAVE_REQUEST_NOT_FOUND(
             formatErrorCode("0003", "400"),
-            "Inactivation cannot be performed. Employee was not found.",
+            "Leave request was not found.",
             HttpStatus.BAD_REQUEST),
 
-    LEAVE_REQUEST_DELETION_FAILURE(
+    LEAVE_REQUEST_REJECTED (
             formatErrorCode("0004", "400"),
-            "Deletion cannot be performed. Data was not found or the state of the leave request does not meet the requirements.",
-    HttpStatus.BAD_REQUEST);
+            "The action cannot be applied on leave request with REJECTED status.",
+            HttpStatus.BAD_REQUEST),
+
+    LEAVE_REQUEST_APPROVED_IN_PAST(
+            formatErrorCode("0005", "400"),
+            "The action cannot be applied on leave request with days approved in the past.",
+            HttpStatus.BAD_REQUEST),
+
+    COMBINATION_NOT_FOUND(
+            formatErrorCode("0006", "400"),
+            "Data associated to the given combination of identifiers does not exist.",
+            HttpStatus.BAD_REQUEST);
 
 
     private final String errorCode;
