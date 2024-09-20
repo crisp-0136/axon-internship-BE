@@ -21,7 +21,12 @@ public enum BusinessErrorCode {
     EMPLOYEE_INACTIVATION_FAILURE(
             formatErrorCode("0003", "400"),
             "Inactivation cannot be performed. Employee was not found.",
-            HttpStatus.BAD_REQUEST);
+            HttpStatus.BAD_REQUEST),
+
+    INVALID_DB_VERSION(
+            formatErrorCode("0004", "409"),
+            "User cannot be updated. Db version conflict.",
+            HttpStatus.CONFLICT);
 
 
     private final String errorCode;
