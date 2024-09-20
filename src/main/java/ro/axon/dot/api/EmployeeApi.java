@@ -48,4 +48,11 @@ public class EmployeeApi {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{employeeId}/requests/{requestId}")
+    public ResponseEntity<Void> deleteLeaveRequest(@PathVariable String employeeId, @PathVariable Long requestId) {
+
+        employeeService.deleteLeaveRequest(employeeId, requestId);
+
+        return ResponseEntity.noContent().build();
+    }
 }

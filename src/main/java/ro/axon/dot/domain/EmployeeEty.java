@@ -83,4 +83,9 @@ public class EmployeeEty extends SrgKeyEntityTml<String> {
     protected Class<? extends SrgKeyEntityTml<String>> entityRefClass() {
         return EmployeeEty.class;
     }
+
+    public void removeLeaveReqEty(LeaveReqEty leaveReqEty) {
+        this.leaveRequestEties.remove(leaveReqEty);
+        leaveReqEty.setEmployeeEty(null);
+    }
 }
