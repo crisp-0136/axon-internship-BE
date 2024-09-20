@@ -21,7 +21,12 @@ public enum BusinessErrorCode {
     EMPLOYEE_INACTIVATION_FAILURE(
             formatErrorCode("0003", "400"),
             "Inactivation cannot be performed. Employee was not found.",
-            HttpStatus.BAD_REQUEST);
+            HttpStatus.BAD_REQUEST),
+
+    LEAVE_REQUEST_DELETION_FAILURE(
+            formatErrorCode("0004", "400"),
+            "Deletion cannot be performed. Data was not found or the state of the leave request does not meet the requirements.",
+    HttpStatus.BAD_REQUEST);
 
 
     private final String errorCode;
