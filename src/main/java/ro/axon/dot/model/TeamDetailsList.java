@@ -8,4 +8,8 @@ import java.util.List;
 public class TeamDetailsList {
 
     private List<TeamDetailsListItem> items;
+
+    public TeamDetailsList(List<TeamDetailsListItem> items) {
+        this.items = items;
+    }
 }

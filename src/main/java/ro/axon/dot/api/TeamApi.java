@@ -17,6 +17,6 @@ public class TeamApi {
 
     @GetMapping("teams")
     public ResponseEntity<TeamDetailsList> getTeamDetailsList() {
-        return ResponseEntity.ok(teamService.getTeamsDetails());
+        return ResponseEntity.ok(teamService.getActiveTeamDetails());
     }
 }
