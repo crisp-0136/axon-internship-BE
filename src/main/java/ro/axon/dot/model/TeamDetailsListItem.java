@@ -1,6 +1,7 @@
 package ro.axon.dot.model;
 
 import lombok.Data;
+import ro.axon.dot.domain.enums.Status;
 
 import java.time.Instant;
 
@@ -13,5 +14,6 @@ public class TeamDetailsListItem {
     private Instant crtTms;
     private String mdfUsr;
     private Instant mdfTms;
+    private Status status;
 
 }
