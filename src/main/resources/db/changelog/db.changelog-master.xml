@@ -229,5 +229,11 @@
                   relativeToChangelogFile="true"/>
     </changeSet>
 
+    <changeSet author="cristian" id="004">
+        <comment>Load legal days off for new year</comment>
+        <loadData file="includes/data-legally-days-off-2024-2025.csv"
+                  relativeToChangelogFile="true"
+                  tableName="LEGALLY_DAYS_OFF"/>
+    </changeSet>
 
 </databaseChangeLog>
