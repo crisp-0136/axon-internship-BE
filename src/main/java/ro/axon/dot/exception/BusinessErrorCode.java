@@ -16,7 +16,7 @@ public enum BusinessErrorCode {
     TEAM_NOT_FOUND(
             formatErrorCode("0002", "400"),
             "Team was not found",
-            HttpStatus.NOT_FOUND),
+            HttpStatus.BAD_REQUEST),
 
     LEAVE_REQUEST_NOT_FOUND(
             formatErrorCode("0003", "400"),
