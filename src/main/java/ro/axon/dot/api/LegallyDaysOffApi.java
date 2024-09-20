@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ro.axon.dot.domain.LegallyDaysOffEty;
+import ro.axon.dot.model.LegallyDaysOffDto;
 import ro.axon.dot.service.LegallyDaysOffService;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class LegallyDaysOffApi {
     }
 
     @GetMapping("/legally-days-off")
-    public List<LegallyDaysOffEty> findLegallyDaysOff(
+    public List<LegallyDaysOffDto> findLegallyDaysOff(
             @RequestParam(required = false) List<String> periods,
             @RequestParam(required = false) List<String> years) {
 
