@@ -6,16 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.axon.dot.domain.EmpYearlyDaysOffEty;
-import ro.axon.dot.domain.EmpYearlyDaysOffHistEty;
-import ro.axon.dot.domain.EmployeeEty;
-import ro.axon.dot.domain.TeamEty;
+import ro.axon.dot.domain.*;
 import ro.axon.dot.domain.enums.EmpYearlyDaysOffHistType;
+import ro.axon.dot.domain.enums.LeaveRequestStatus;
 import ro.axon.dot.domain.enums.Status;
-import ro.axon.dot.domain.repositories.EmpYearlyDaysOffHistRepository;
-import ro.axon.dot.domain.repositories.EmpYearlyDaysOffRepository;
-import ro.axon.dot.domain.repositories.EmployeeRepository;
-import ro.axon.dot.domain.repositories.TeamRepository;
+import ro.axon.dot.domain.repositories.*;
 import ro.axon.dot.exception.BusinessErrorCode;
 import ro.axon.dot.exception.BusinessException;
 import ro.axon.dot.mapper.EmployeeMapper;
@@ -37,6 +32,7 @@ public class EmployeeService {
     private final TeamRepository teamRepository;
     private final EmpYearlyDaysOffRepository empYearlyDaysOffRepository;
     private final EmpYearlyDaysOffHistRepository empYearlyDaysOffHistRepository;
+    private final LeaveReqRepository leaveReqRepository;
 
     @Transactional
     public void inactivateEmployee(String id) {
@@ -52,7 +48,7 @@ public class EmployeeService {
             employeeRepository.save(employeeEty);
         }
         else {
-            throw new BusinessException(BusinessErrorCode.EMPLOYEE_INACTIVATION_FAILURE);
+            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_NOT_FOUND);
         }
     }
 
@@ -128,4 +124,42 @@ public class EmployeeService {
         employeeRepository.save(employeeEty);
     }
 
+    @Transactional
+    public void deleteLeaveRequest(String userId, Long leaveReqId) {
+        Optional<EmployeeEty> optionalEmployeeEty = employeeRepository.findById(userId);
+        Optional<LeaveReqEty> optionalLeaveReqEty = leaveReqRepository.findById(leaveReqId);
+
+        if(optionalEmployeeEty.isEmpty())
+            throw new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND);
+
+        if(optionalLeaveReqEty.isEmpty())
+            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_NOT_FOUND);
+
+        EmployeeEty employeeEty = optionalEmployeeEty.get();
+        LeaveReqEty leaveReqEty = optionalLeaveReqEty.get();
+
+        if(!leaveReqEty.getEmployeeEty().getEmployeeId().equals(employeeEty.getEmployeeId())) {
+            throw new BusinessException(BusinessErrorCode.COMBINATION_NOT_FOUND);
+        }
+
+        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.REJECTED)){
+            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_REJECTED);
+        }
+
+        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.APPROVED)){
+
+            LocalDate currentDate = LocalDate.now();
+            LocalDate leaveReqStartDate = leaveReqEty.getStartDate();
+
+            if(leaveReqStartDate.getYear() < currentDate.getYear() || (
+                    leaveReqStartDate.getYear() == currentDate.getYear() &&
+                            leaveReqStartDate.getMonthValue() < currentDate.getMonthValue())) {
+
+                throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_APPROVED_IN_PAST);
+            }
+        }
+
+        employeeEty.removeLeaveReqEty(leaveReqEty);
+        employeeRepository.save(employeeEty);
+    }
 }
