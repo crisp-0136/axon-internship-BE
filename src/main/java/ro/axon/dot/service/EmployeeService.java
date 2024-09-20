@@ -41,6 +41,7 @@ public class EmployeeService {
         }
     }
 
+    @Transactional
     public void deleteLeaveRequest(String userId, Long leaveReqId) {
         Optional<EmployeeEty> optionalEmployeeEty = employeeRepository.findById(userId);
         Optional<LeaveReqEty> optionalLeaveReqEty = leaveReqRepository.findById(leaveReqId);
