@@ -9,19 +9,24 @@ import org.springframework.http.HttpStatus;
 public enum BusinessErrorCode {
 
     EMPLOYEE_NOT_FOUND(
-            formatErrorCode("0001", "404"),
+            formatErrorCode("0001", "400"),
             "Employee was not found",
             HttpStatus.NOT_FOUND),
 
     TEAM_NOT_FOUND(
-            formatErrorCode("0002", "404"),
+            formatErrorCode("0002", "400"),
             "Team was not found",
             HttpStatus.NOT_FOUND),
 
     EMPLOYEE_INACTIVATION_FAILURE(
             formatErrorCode("0003", "400"),
             "Inactivation cannot be performed. Employee was not found.",
-            HttpStatus.BAD_REQUEST);
+            HttpStatus.BAD_REQUEST),
+
+    INVALID_DB_VERSION(
+            formatErrorCode("0004", "409"),
+            "User cannot be updated. Db version conflict.",
+            HttpStatus.CONFLICT);
 
 
     private final String errorCode;
