@@ -48,7 +48,7 @@ public class EmployeeService {
             employeeRepository.save(employeeEty);
         }
         else {
-            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_NOT_FOUND);
+            throw new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND);
         }
     }
 
