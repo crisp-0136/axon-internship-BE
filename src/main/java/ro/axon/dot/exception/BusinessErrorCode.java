@@ -41,6 +41,31 @@ public enum BusinessErrorCode {
     COMBINATION_NOT_FOUND(
             formatErrorCode("0007", "400"),
             "Data associated to the given combination of identifiers does not exist.",
+            HttpStatus.BAD_REQUEST),
+
+    LEAVE_DIFFERENT_YEARS(
+            formatErrorCode("0008", "400"),
+            "Leave request across different years is not allowed",
+            HttpStatus.BAD_REQUEST),
+
+    LEAVE_IN_PAST(
+            formatErrorCode("0009", "400"),
+            "Cannot create leave request in the past",
+            HttpStatus.BAD_REQUEST),
+
+    INSUFFICIENT_DAYS_OFF(
+            formatErrorCode("0010", "400"),
+            "Not enough leave days available",
+            HttpStatus.BAD_REQUEST),
+
+    DAYS_OFF_NOT_FOUND(
+            formatErrorCode("0011", "400"),
+            "Employee yearly days off not found",
+            HttpStatus.BAD_REQUEST),
+
+    DUPLICATE_LEAVE_REQUEST(
+            formatErrorCode("0012", "400"),
+            "Duplicate leave request",
             HttpStatus.BAD_REQUEST);
 
 
