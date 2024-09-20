@@ -43,13 +43,13 @@ public class EmployeeEty extends SrgKeyEntityTml<String> {
     private String crtUsr;
 
     @Column(name = "CRT_TMS", nullable = false)
-    private LocalDate crtTms;
+    private Instant crtTms;
 
     @Column(name = "MDF_USR", nullable = false, length = 255)
     private String mdfUsr;
 
     @Column(name = "MDF_TMS", nullable = false)
-    private LocalDate mdfTms;
+    private Instant mdfTms;
 
     @Column(name = "ROLE", nullable = false, length = 255)
     private String role = "USER";

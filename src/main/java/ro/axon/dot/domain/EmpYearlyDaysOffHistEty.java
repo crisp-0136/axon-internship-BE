@@ -36,7 +36,7 @@ public class EmpYearlyDaysOffHistEty {
     private String crtUsr;
 
     @Column(name = "CRT_TMS", nullable = false)
-    private LocalDate crtTms;
+    private Instant crtTms;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EMP_YEARLY_DAYS_OFF_ID", nullable = false)

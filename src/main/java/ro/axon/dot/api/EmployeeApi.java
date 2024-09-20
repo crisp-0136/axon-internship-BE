@@ -17,14 +17,14 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/employees")
 public class EmployeeApi {
 
     private final EmployeeService employeeService;
     private final TeamRepository teamRepository;
     private final EmployeeRepository employeeRepository;
 
-    @PatchMapping("/employees/{employeeId}/inactivate")
+    @PatchMapping("/{employeeId}/inactivate")
     public ResponseEntity<Void> inactivateEmployee(@PathVariable String employeeId) {
 
         employeeService.inactivateEmployee(employeeId);
@@ -32,23 +32,18 @@ public class EmployeeApi {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("employees")
-    public ResponseEntity<Void> addEmployee(@RequestBody @Valid AddEmployeeDto employeeDto) {
+    @PostMapping("")
+    public ResponseEntity<Void> addEmployee(@RequestBody AddEmployeeDto employeeDto) {
 
         employeeService.addEmployee(employeeDto);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
 
-        return ResponseEntity.badRequest().body(ex.getMessage());
-    }
-
-    @PatchMapping("employees/{employeeId}")
+    @PatchMapping("/{employeeId}")
     public ResponseEntity<Void> updateEmployee(@PathVariable String employeeId,
-                                               @RequestBody @Valid UpdateEmployeeDto updateEmployeeDto){
+                                               @RequestBody UpdateEmployeeDto updateEmployeeDto){
 
         employeeService.updateEmployee(employeeId, updateEmployeeDto);
 

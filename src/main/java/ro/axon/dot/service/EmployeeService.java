@@ -3,6 +3,7 @@ package ro.axon.dot.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.axon.dot.domain.EmpYearlyDaysOffEty;
@@ -46,7 +47,7 @@ public class EmployeeService {
 
             employeeEty.setStatus(Status.INACTIVE);
             employeeEty.setMdfUsr("initial.load");
-            employeeEty.setMdfTms(LocalDate.now());
+            employeeEty.setMdfTms(Instant.now());
 
             employeeRepository.save(employeeEty);
         }
@@ -58,45 +59,43 @@ public class EmployeeService {
     @Transactional
     public void addEmployee(AddEmployeeDto employeeDto) {
 
-        if (!teamRepository.existsById(employeeDto.getTeamId())) {
-            throw new BusinessException(BusinessErrorCode.TEAM_NOT_FOUND);
-        }
-        else {
-            EmployeeEty employeeEty = employeeMapper.dtoToEntity(employeeDto);
+        TeamEty teamEty = teamRepository.findById(employeeDto.getTeamId())
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.TEAM_NOT_FOUND));
 
-            TeamEty teamEty = teamRepository.findById(employeeDto.getTeamId()).orElseThrow(()
-                    -> new EntityNotFoundException("Team not found"));
+        EmployeeEty employeeEty = employeeMapper.dtoToEntity(employeeDto);
 
-            employeeEty.setTeam(teamEty);
+        employeeEty.setTeam(teamEty);
 
-            employeeEty.setCrtUsr("test");
-            employeeEty.setCrtTms(LocalDate.now());
-            employeeEty.setMdfUsr("test");
-            employeeEty.setMdfTms(LocalDate.now());
-            employeeEty.setPassword("test");
-            employeeEty.setStatus(Status.ACTIVE);
-            employeeEty.setContractStartDate(LocalDate.now());
-            LocalDate contractEndDate = LocalDate.of(2099, 12, 31);
-            employeeEty.setContractEndDate(LocalDate.from(contractEndDate));
-            employeeRepository.save(employeeEty);
+        employeeEty.setCrtUsr("test");
+        employeeEty.setCrtTms(Instant.now());
+        employeeEty.setMdfUsr("test");
+        employeeEty.setMdfTms(Instant.now());
 
-            EmpYearlyDaysOffEty empYearlyDaysOffEty = new EmpYearlyDaysOffEty();
-            empYearlyDaysOffEty.setEmployeeEty(employeeEty);
-            empYearlyDaysOffEty.setTotalNoDays(employeeDto.getNoDaysOff());
-            empYearlyDaysOffEty.setYear(LocalDate.now().getYear());
+        String password = employeeDto.getFirstName() + "-" + employeeDto.getLastName() + "-" + "2024";
+        String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        employeeEty.setPassword(hashPassword);
 
-            EmpYearlyDaysOffHistEty historyEntry = new EmpYearlyDaysOffHistEty();
-            historyEntry.setNoDays(employeeDto.getNoDaysOff());
-            historyEntry.setDescription("Initial");
-            historyEntry.setType(EmpYearlyDaysOffHistType.INCREASE);
-            historyEntry.setCrtUsr("test");
-            historyEntry.setCrtTms(LocalDate.now());
-            historyEntry.setEmpYearlyDaysOffEty(empYearlyDaysOffEty);
+        employeeEty.setStatus(Status.ACTIVE);
+        employeeEty.setContractStartDate(employeeDto.getContractStartDate());
+        LocalDate contractEndDate = LocalDate.of(2099, 12, 31);
+        employeeEty.setContractEndDate(LocalDate.from(contractEndDate));
 
-            empYearlyDaysOffEty.getHistoryRecords().add(historyEntry);
+        EmpYearlyDaysOffEty empYearlyDaysOffEty = new EmpYearlyDaysOffEty();
+        empYearlyDaysOffEty.setEmployeeEty(employeeEty);
+        empYearlyDaysOffEty.setTotalNoDays(employeeDto.getNoDaysOff());
+        empYearlyDaysOffEty.setYear(LocalDate.now().getYear());
+        employeeEty.getEmpYearlyDaysOffEties().add(empYearlyDaysOffEty);
 
-            empYearlyDaysOffRepository.save(empYearlyDaysOffEty);
-        }
+        EmpYearlyDaysOffHistEty historyEntry = new EmpYearlyDaysOffHistEty();
+        historyEntry.setNoDays(employeeDto.getNoDaysOff());
+        historyEntry.setDescription("Initial");
+        historyEntry.setType(EmpYearlyDaysOffHistType.INCREASE);
+        historyEntry.setCrtUsr("test");
+        historyEntry.setCrtTms(Instant.now());
+        historyEntry.setEmpYearlyDaysOffEty(empYearlyDaysOffEty);
+
+        employeeRepository.save(employeeEty);
+
     }
 
     @Transactional
@@ -121,6 +120,8 @@ public class EmployeeService {
         employeeEty.setEmail(updateEmployeeDto.getEmail());
         employeeEty.setRole(updateEmployeeDto.getRole());
         employeeEty.setTeam(teamEty);
+        employeeEty.setMdfUsr("update");
+        employeeEty.setMdfTms(Instant.now());
 
         employeeRepository.save(employeeEty);
     }
