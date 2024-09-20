@@ -77,5 +77,6 @@ public class EmployeeService {
         }
 
         employeeEty.removeLeaveReqEty(leaveReqEty);
+        employeeRepository.save(employeeEty);
     }
 }
