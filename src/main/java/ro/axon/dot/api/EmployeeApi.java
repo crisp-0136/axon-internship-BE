@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import ro.axon.dot.domain.EmployeeEty;
 import ro.axon.dot.domain.repositories.EmployeeRepository;
 import ro.axon.dot.domain.repositories.TeamRepository;
-import ro.axon.dot.exception.BusinessErrorCode;
-import ro.axon.dot.exception.BusinessException;
 import ro.axon.dot.model.AddEmployeeDto;
 import ro.axon.dot.model.UpdateEmployeeDto;
 import ro.axon.dot.model.UpdateLeaveReqDTO;
 import ro.axon.dot.service.EmployeeService;
+import ro.axon.dot.service.LeaveReqService;
 
 import javax.validation.Valid;
 
@@ -22,6 +21,7 @@ import javax.validation.Valid;
 public class EmployeeApi {
 
     private final EmployeeService employeeService;
+    private final LeaveReqService leaveReqService;
 
     @PatchMapping("/{employeeId}/inactivate")
     public ResponseEntity<Void> inactivateEmployee(@PathVariable String employeeId) {
@@ -52,7 +52,7 @@ public class EmployeeApi {
     @DeleteMapping("/{employeeId}/requests/{requestId}")
     public ResponseEntity<Void> deleteLeaveRequest(@PathVariable String employeeId, @PathVariable Long requestId) {
 
-        employeeService.deleteLeaveRequest(employeeId, requestId);
+        leaveReqService.deleteLeaveRequest(employeeId, requestId);
 
         return ResponseEntity.noContent().build();
     }
@@ -61,7 +61,7 @@ public class EmployeeApi {
     public ResponseEntity<Void> updateLeaveRequest(@PathVariable String employeeId, @PathVariable Long requestId,
                                                    @Valid @RequestBody UpdateLeaveReqDTO updateLeaveReqDTO) {
 
-        employeeService.updateLeaveRequest(employeeId, requestId, updateLeaveReqDTO);
+        leaveReqService.updateLeaveRequest(employeeId, requestId, updateLeaveReqDTO);
 
         return ResponseEntity.noContent().build();
     }

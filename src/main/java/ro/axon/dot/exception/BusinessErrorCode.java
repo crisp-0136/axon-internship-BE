@@ -51,7 +51,23 @@ public enum BusinessErrorCode {
     INVALID_DATE_RANGE(
             formatErrorCode("0009", "400"),
             "Start date cannot be greater than end date.",
-            HttpStatus.BAD_REQUEST);
+            HttpStatus.BAD_REQUEST),
+
+    INSUFFICIENT_YEARLY_DAYS_OFF(
+            formatErrorCode("0010", "400"),
+            "Employee does not have sufficient yearly days off",
+            HttpStatus.BAD_REQUEST),
+
+    LEAVE_REQ_PERIOD_NOT_IN_SAME_YEAR(
+            formatErrorCode("0010", "400"),
+            "Start date and end date must be in same year.",
+            HttpStatus.BAD_REQUEST),
+
+    LEAVE_REQUEST_PERIOD_IN_PAST(
+            formatErrorCode("0010", "400"),
+            "The start date must not be earlier than the first day of the current month.",
+    HttpStatus.BAD_REQUEST);
+
 
 
     private final String errorCode;
