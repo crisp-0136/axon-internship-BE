@@ -11,6 +11,7 @@ import ro.axon.dot.exception.BusinessErrorCode;
 import ro.axon.dot.exception.BusinessException;
 import ro.axon.dot.model.AddEmployeeDto;
 import ro.axon.dot.model.UpdateEmployeeDto;
+import ro.axon.dot.model.UpdateLeaveReqDTO;
 import ro.axon.dot.service.EmployeeService;
 
 import javax.validation.Valid;
@@ -52,6 +53,15 @@ public class EmployeeApi {
     public ResponseEntity<Void> deleteLeaveRequest(@PathVariable String employeeId, @PathVariable Long requestId) {
 
         employeeService.deleteLeaveRequest(employeeId, requestId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{employeeId}/requests/{requestId}")
+    public ResponseEntity<Void> updateLeaveRequest(@PathVariable String employeeId, @PathVariable Long requestId,
+                                                   @Valid @RequestBody UpdateLeaveReqDTO updateLeaveReqDTO) {
+
+        employeeService.updateLeaveRequest(employeeId, requestId, updateLeaveReqDTO);
 
         return ResponseEntity.noContent().build();
     }

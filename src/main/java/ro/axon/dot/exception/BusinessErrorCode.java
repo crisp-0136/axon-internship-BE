@@ -41,6 +41,16 @@ public enum BusinessErrorCode {
     COMBINATION_NOT_FOUND(
             formatErrorCode("0007", "400"),
             "Data associated to the given combination of identifiers does not exist.",
+            HttpStatus.BAD_REQUEST),
+
+    INVALID_LEAVE_REQUEST_V(
+            formatErrorCode("0008", "409"),
+            "Current leave request version is higher than the specified version.",
+            HttpStatus.CONFLICT),
+
+    INVALID_DATE_RANGE(
+            formatErrorCode("0009", "400"),
+            "Start date cannot be greater than end date.",
             HttpStatus.BAD_REQUEST);
 
 

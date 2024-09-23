@@ -16,6 +16,7 @@ import ro.axon.dot.exception.BusinessException;
 import ro.axon.dot.mapper.EmployeeMapper;
 import ro.axon.dot.model.AddEmployeeDto;
 import ro.axon.dot.model.UpdateEmployeeDto;
+import ro.axon.dot.model.UpdateLeaveReqDTO;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
@@ -161,5 +162,57 @@ public class EmployeeService {
 
         employeeEty.removeLeaveReqEty(leaveReqEty);
         employeeRepository.save(employeeEty);
+    }
+
+    @Transactional
+    public void updateLeaveRequest(String employeeId, Long leaveReqId, UpdateLeaveReqDTO updateLeaveReqDTO){
+
+        LeaveReqEty leaveReqEty = leaveReqRepository.findById(leaveReqId)
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.LEAVE_REQUEST_NOT_FOUND));
+
+        if(!employeeRepository.existsById(employeeId)) {
+            throw new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND);
+        }
+
+        if(!employeeRepository.existsById(leaveReqEty.getEmployeeEty().getEmployeeId())) {
+            throw new BusinessException(BusinessErrorCode.COMBINATION_NOT_FOUND);
+        }
+
+        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.REJECTED)){
+            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_REJECTED);
+        }
+
+        if(updateLeaveReqDTO.getV() < leaveReqEty.getV()){
+            throw new BusinessException(BusinessErrorCode.INVALID_LEAVE_REQUEST_V);
+        }
+
+        if(updateLeaveReqDTO.getStartDate().isAfter(updateLeaveReqDTO.getEndDate())){
+            throw new BusinessException(BusinessErrorCode.INVALID_DATE_RANGE);
+        }
+
+        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.APPROVED)){
+
+            LocalDate currentDate = LocalDate.now();
+            LocalDate leaveReqStartDate = leaveReqEty.getStartDate();
+
+            if(leaveReqStartDate.getYear() < currentDate.getYear() || (
+                    leaveReqStartDate.getYear() == currentDate.getYear() &&
+                            leaveReqStartDate.getMonthValue() < currentDate.getMonthValue())) {
+
+                throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_APPROVED_IN_PAST);
+            }
+
+            leaveReqEty.setStatus(LeaveRequestStatus.PENDING);
+        }
+
+        leaveReqEty.setStartDate(updateLeaveReqDTO.getStartDate());
+        leaveReqEty.setEndDate(updateLeaveReqDTO.getEndDate());
+        leaveReqEty.setType(updateLeaveReqDTO.getType());
+        leaveReqEty.setDescription(updateLeaveReqDTO.getDescription());
+
+        leaveReqEty.setMdfUsr("initial.load");
+        leaveReqEty.setMdfTms(Instant.now());
+
+        leaveReqRepository.save(leaveReqEty);
     }
 }
