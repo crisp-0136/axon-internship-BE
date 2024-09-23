@@ -88,4 +88,14 @@ public class EmployeeEty extends SrgKeyEntityTml<String> {
         this.leaveRequestEties.remove(leaveReqEty);
         leaveReqEty.setEmployeeEty(null);
     }
+
+    public void addLeaveRequest(LeaveReqEty leaveRequest) {
+        leaveRequestEties.add(leaveRequest);
+        leaveRequest.setEmployeeEty(this);
+    }
+
+    public void removeLeaveRequest(LeaveReqEty leaveRequest) {
+        leaveRequestEties.remove(leaveRequest);
+        leaveRequest.setEmployeeEty(null);
+    }
 }

@@ -66,7 +66,12 @@ public enum BusinessErrorCode {
     DUPLICATE_LEAVE_REQUEST(
             formatErrorCode("0012", "400"),
             "Duplicate leave request",
-            HttpStatus.BAD_REQUEST);
+            HttpStatus.BAD_REQUEST),
+    END_DATE_BEFORE_START_DATE(
+            formatErrorCode("0013", "400"),
+            "End date cannot be before start date",
+            HttpStatus.BAD_REQUEST
+    );
 
 
     private final String errorCode;

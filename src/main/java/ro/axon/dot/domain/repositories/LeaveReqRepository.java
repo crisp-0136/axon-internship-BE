@@ -6,9 +6,11 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import ro.axon.dot.domain.EmployeeEty;
 import ro.axon.dot.domain.LeaveReqEty;
+import ro.axon.dot.domain.enums.LeaveRequestStatus;
 import ro.axon.dot.domain.enums.LeaveRequestType;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface LeaveReqRepository extends
@@ -21,4 +23,6 @@ public interface LeaveReqRepository extends
                                                 @Param("startDate") LocalDate startDate,
                                                 @Param("endDate") LocalDate endDate,
                                                 @Param("type") LeaveRequestType type);
+
+    List<LeaveReqEty> findByEmployeeEtyAndStatusIn(EmployeeEty employee, List<LeaveRequestStatus> statuses);
 }
