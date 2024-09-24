@@ -71,6 +71,12 @@ public enum BusinessErrorCode {
             formatErrorCode("0013", "400"),
             "End date cannot be before start date",
             HttpStatus.BAD_REQUEST
+    ),
+
+    LEAVE_REQUEST_OVERLAP(
+            formatErrorCode("0014", "400"),
+            "The dates in this request overlap with a previously submitted leave request.",
+            HttpStatus.BAD_REQUEST
     );
 
 

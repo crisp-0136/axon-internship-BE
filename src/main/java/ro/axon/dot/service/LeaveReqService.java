@@ -18,6 +18,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +76,9 @@ public class LeaveReqService {
             throw new BusinessException(BusinessErrorCode.LEAVE_IN_PAST);
         }
 
+        checkForOverlappingRequests(employeeEty, leaveReqDto.getStartDate(), leaveReqDto.getEndDate());
+
+
         boolean requestExists = leaveRequestRepository
                 .findDuplicateRequests(
                         employeeEty,
@@ -88,6 +92,21 @@ public class LeaveReqService {
         }
     }
 
+    private void checkForOverlappingRequests(EmployeeEty employeeEty, LocalDate startDate, LocalDate endDate) {
+        List<LeaveReqEty> existingRequests = leaveRequestRepository.findByEmployeeEtyAndStatusIn(
+                employeeEty,
+                List.of(LeaveRequestStatus.PENDING, LeaveRequestStatus.APPROVED)
+        );
+
+        for (LeaveReqEty request : existingRequests) {
+            // Check if the new request overlaps with existing ones
+            boolean overlaps = !(endDate.isBefore(request.getStartDate()) || startDate.isAfter(request.getEndDate()));
+            if (overlaps) {
+                throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_OVERLAP);
+            }
+        }
+    }
+
     public int calculateEffectiveDaysRequested(LeaveReqDto leaveReqDto, EmployeeEty employee) {
 
         List<LocalDate> legallyDaysOff = fetchLegallyDaysOff(leaveReqDto);
@@ -98,22 +117,26 @@ public class LeaveReqService {
                     boolean isWeekend = (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY);
                     boolean isLegalOff = legallyDaysOff.contains(date);
 
-
-                    if (dayOfWeek == DayOfWeek.SUNDAY && isLegalOff || dayOfWeek == DayOfWeek.SATURDAY && isLegalOff ) {
-                        return false;
-                    }
-
                     return !(isWeekend || isLegalOff);
                 })
                 .count();
     }
 
     private List<LocalDate> fetchLegallyDaysOff(LeaveReqDto leaveReqDto) {
-        String yearMonth = leaveReqDto.getStartDate().toString().substring(0, 7);
-        return legallyDaysOffRepository.findByPeriodIn(List.of(yearMonth))
+        LocalDate startDate = leaveReqDto.getStartDate();
+        LocalDate endDate = leaveReqDto.getEndDate();
+
+
+        List<String> yearMonths = startDate.datesUntil(endDate.plusDays(1))
+                .map(date -> date.toString().substring(0, 7))
+                .distinct()
+                .collect(Collectors.toList());
+
+
+        return legallyDaysOffRepository.findByPeriodIn(yearMonths)
                 .stream()
                 .map(LegallyDaysOffEty::getDate)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private long calculateTotalDaysTaken(EmployeeEty employee) {
@@ -123,8 +146,8 @@ public class LeaveReqService {
         );
 
         return existingRequests.stream()
-                .filter(request -> request.getStartDate().getYear() == LocalDate.now().getYear())
-                .flatMap(request -> request.getStartDate().datesUntil(request.getEndDate().plusDays(1)))
-                .count();
+                .mapToLong(LeaveReqEty::getNoDays)  // `getNoDays()` gets the days stored in the request
+                .sum();
     }
+
 }
