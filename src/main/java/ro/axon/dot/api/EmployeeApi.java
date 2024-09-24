@@ -8,6 +8,7 @@ import ro.axon.dot.model.*;
 import ro.axon.dot.service.EmployeeService;
 import ro.axon.dot.service.LeaveReqService;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class EmployeeApi {
     @DeleteMapping("/{employeeId}/requests/{requestId}")
     public ResponseEntity<Void> deleteLeaveRequest(@PathVariable String employeeId, @PathVariable Long requestId) {
 
-        employeeService.deleteLeaveRequest(employeeId, requestId);
+        leaveReqService.deleteLeaveRequest(employeeId, requestId);
 
         return ResponseEntity.noContent().build();
     }
@@ -68,6 +69,14 @@ public class EmployeeApi {
         return leaveReqService.getLeaveRequests(employeeId, startDate, endDate);
     }
 
+    @PutMapping("/{employeeId}/requests/{requestId}")
+    public ResponseEntity<Void> updateLeaveRequest(@PathVariable String employeeId, @PathVariable Long requestId,
+                                                   @Valid @RequestBody UpdateLeaveReqDTO updateLeaveReqDTO) {
+
+        leaveReqService.updateLeaveRequest(employeeId, requestId, updateLeaveReqDTO);
+
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping
     public ResponseEntity<List<EmployeeDto>> getEmployees(@RequestParam(required = false) String name) {
