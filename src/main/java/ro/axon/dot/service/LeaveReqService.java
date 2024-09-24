@@ -139,7 +139,8 @@ public class LeaveReqService {
                 .orElseThrow(() -> new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND));
 
         List<LeaveReqEty>  leaveReqEtyList = employeeEty.getLeaveRequestEties().stream()
-                .filter(obj -> obj.getStatus() != LeaveRequestStatus.REJECTED).toList();
+                .filter(obj -> obj.getStatus() != LeaveRequestStatus.REJECTED &&
+                        obj.getStartDate().getYear() == year).toList();
 
         List<Long> ignoreLeaveReqIdsList = Arrays.stream(ignoreLeaveReqIds).toList();
 
