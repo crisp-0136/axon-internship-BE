@@ -10,6 +10,7 @@ import ro.axon.dot.service.LeaveReqService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -77,4 +78,9 @@ public class EmployeeApi {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping
+    public ResponseEntity<List<EmployeeDto>> getEmployees(@RequestParam(required = false) String name) {
+        List<EmployeeDto> employees = employeeService.getEmployees(name);
+        return ResponseEntity.ok(employees);
+    }
 }
