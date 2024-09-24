@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 public class LeaveReqService {
     private final EmployeeRepository employeeRepository;
     private final LeaveReqRepository leaveRequestRepository;
-    private final EmpYearlyDaysOffRepository empYearlyDaysOffRepository;
     private final LegallyDaysOffRepository legallyDaysOffRepository;
     private final LeaveReqMapper leaveReqMapper;
 
@@ -40,11 +39,6 @@ public class LeaveReqService {
                 .orElseThrow(() -> new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND));
 
         validateLeaveRequest(employee, leaveReqDto);
-
-        EmpYearlyDaysOffEty yearlyDaysOff = empYearlyDaysOffRepository
-                .findByEmployeeEtyAndYear(employee, leaveReqDto.getStartDate().getYear())
-                .orElseThrow(() -> new BusinessException(BusinessErrorCode.DAYS_OFF_NOT_FOUND));
-
 
         int noOfWorkingDays = getNoOfWorkingDays(leaveReqDto.getStartDate(), leaveReqDto.getEndDate());
 
