@@ -8,6 +8,7 @@ import ro.axon.dot.domain.EmployeeEty;
 import ro.axon.dot.domain.LeaveReqEty;
 import ro.axon.dot.domain.enums.LeaveRequestStatus;
 import ro.axon.dot.domain.enums.LeaveRequestType;
+import ro.axon.dot.domain.enums.Status;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,7 +25,14 @@ public interface LeaveReqRepository extends
                                                 @Param("endDate") LocalDate endDate,
                                                 @Param("type") LeaveRequestType type);
 
-    List<LeaveReqEty> findByEmployeeEtyAndStatusIn(EmployeeEty employee, List<LeaveRequestStatus> statuses);
+    @Query("SELECT l FROM LeaveReqEty l WHERE l.employeeEty = :employee AND l.status IN :statuses AND l.startDate >= :startDate AND l.endDate <= :endDate")
+    List<LeaveReqEty> findByEmployeeEtyAndStatusIn(
+            @Param("employee") EmployeeEty employee,
+            @Param("statuses") List<LeaveRequestStatus> statuses,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
     List<LeaveReqEty> findByEmployeeEty(EmployeeEty employee);
 
 }

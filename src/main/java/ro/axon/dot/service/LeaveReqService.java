@@ -42,7 +42,7 @@ public class LeaveReqService {
                 .orElseThrow(() -> new BusinessException(BusinessErrorCode.DAYS_OFF_NOT_FOUND));
 
 
-        int effectiveLeaveDays = calculateEffectiveDaysRequested(leaveReqDto, employee);
+        int effectiveLeaveDays = calculateEffectiveDaysRequested(leaveReqDto);
         long totalDaysTaken = calculateTotalDaysTaken(employee);
 
         if (effectiveLeaveDays + totalDaysTaken > yearlyDaysOff.getTotalNoDays()) {
@@ -66,14 +66,12 @@ public class LeaveReqService {
 
     @Transactional
     public LeaveReqDetailsList getLeaveRequests(String employeeId, LocalDate startDate, LocalDate endDate) {
-        // Fetch employee by employeeId
+
         EmployeeEty employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND));
 
-        // Fetch leave requests based on employee
         List<LeaveReqEty> leaveRequests = leaveRequestRepository.findByEmployeeEty(employee);
 
-        // Filter by startDate and endDate if provided
         if (startDate != null) {
             leaveRequests = leaveRequests.stream()
                     .filter(req -> !req.getStartDate().isBefore(startDate))
@@ -85,7 +83,6 @@ public class LeaveReqService {
                     .collect(Collectors.toList());
         }
 
-        // Map to DTO and create LeaveReqDetailsList
         LeaveReqDetailsList leaveReqDetailsList = new LeaveReqDetailsList();
         leaveReqDetailsList.setItems(leaveRequests.stream()
                 .map(leaveReqMapper::toDto)
@@ -125,13 +122,19 @@ public class LeaveReqService {
     }
 
     private void checkForOverlappingRequests(EmployeeEty employeeEty, LocalDate startDate, LocalDate endDate) {
+        LocalDate currentYear = LocalDate.now();
+        LocalDate startOfYear = currentYear.withDayOfYear(1);
+        LocalDate endOfYear = currentYear.withDayOfYear(currentYear.lengthOfYear());
+
         List<LeaveReqEty> existingRequests = leaveRequestRepository.findByEmployeeEtyAndStatusIn(
                 employeeEty,
-                List.of(LeaveRequestStatus.PENDING, LeaveRequestStatus.APPROVED)
+                List.of(LeaveRequestStatus.PENDING, LeaveRequestStatus.APPROVED),
+                startOfYear,
+                endOfYear
         );
 
         for (LeaveReqEty request : existingRequests) {
-            // Check if the new request overlaps with existing ones
+
             boolean overlaps = !(endDate.isBefore(request.getStartDate()) || startDate.isAfter(request.getEndDate()));
             if (overlaps) {
                 throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_OVERLAP);
@@ -139,7 +142,7 @@ public class LeaveReqService {
         }
     }
 
-    public int calculateEffectiveDaysRequested(LeaveReqDto leaveReqDto, EmployeeEty employee) {
+    public int calculateEffectiveDaysRequested(LeaveReqDto leaveReqDto) {
 
         List<LocalDate> legallyDaysOff = fetchLegallyDaysOff(leaveReqDto);
 
@@ -172,13 +175,19 @@ public class LeaveReqService {
     }
 
     private long calculateTotalDaysTaken(EmployeeEty employee) {
+        LocalDate currentYear = LocalDate.now();
+        LocalDate startOfYear = currentYear.withDayOfYear(1);
+        LocalDate endOfYear = currentYear.withDayOfYear(currentYear.lengthOfYear());
+
         List<LeaveReqEty> existingRequests = leaveRequestRepository.findByEmployeeEtyAndStatusIn(
                 employee,
-                List.of(LeaveRequestStatus.PENDING, LeaveRequestStatus.APPROVED)
+                List.of(LeaveRequestStatus.PENDING, LeaveRequestStatus.APPROVED),
+                startOfYear,
+                endOfYear
         );
 
         return existingRequests.stream()
-                .mapToLong(LeaveReqEty::getNoDays)  // `getNoDays()` gets the days stored in the request
+                .mapToLong(LeaveReqEty::getNoDays)
                 .sum();
     }
 
