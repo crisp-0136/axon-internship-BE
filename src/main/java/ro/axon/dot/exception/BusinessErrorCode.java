@@ -43,31 +43,41 @@ public enum BusinessErrorCode {
             "Data associated to the given combination of identifiers does not exist.",
             HttpStatus.BAD_REQUEST),
 
-    INVALID_LEAVE_REQUEST_V(
-            formatErrorCode("0008", "409"),
-            "Current leave request version is higher than the specified version.",
-            HttpStatus.CONFLICT),
+    LEAVE_DIFFERENT_YEARS(
+            formatErrorCode("0008", "400"),
+            "Leave request across different years is not allowed",
+            HttpStatus.BAD_REQUEST),
 
-    INVALID_DATE_RANGE(
+    LEAVE_IN_PAST(
             formatErrorCode("0009", "400"),
-            "Start date cannot be greater than end date.",
+            "Cannot create leave request in the past",
             HttpStatus.BAD_REQUEST),
 
-    INSUFFICIENT_YEARLY_DAYS_OFF(
+    INSUFFICIENT_DAYS_OFF(
             formatErrorCode("0010", "400"),
-            "Employee does not have sufficient yearly days off",
+            "Not enough leave days available",
             HttpStatus.BAD_REQUEST),
 
-    LEAVE_REQ_PERIOD_NOT_IN_SAME_YEAR(
-            formatErrorCode("0010", "400"),
-            "Start date and end date must be in same year.",
+    DAYS_OFF_NOT_FOUND(
+            formatErrorCode("0011", "400"),
+            "Employee yearly days off not found",
             HttpStatus.BAD_REQUEST),
 
-    LEAVE_REQUEST_PERIOD_IN_PAST(
-            formatErrorCode("0010", "400"),
-            "The start date must not be earlier than the first day of the current month.",
-    HttpStatus.BAD_REQUEST);
+    DUPLICATE_LEAVE_REQUEST(
+            formatErrorCode("0012", "400"),
+            "Duplicate leave request",
+            HttpStatus.BAD_REQUEST),
+    END_DATE_BEFORE_START_DATE(
+            formatErrorCode("0013", "400"),
+            "End date cannot be before start date",
+            HttpStatus.BAD_REQUEST
+    ),
 
+    LEAVE_REQUEST_OVERLAP(
+            formatErrorCode("0014", "400"),
+            "The dates in this request overlap with a previously submitted leave request.",
+            HttpStatus.BAD_REQUEST
+    );
 
 
     private final String errorCode;

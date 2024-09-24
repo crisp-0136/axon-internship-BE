@@ -9,7 +9,7 @@ import ro.axon.dot.model.TeamDetailsListItem;
 /**
  * Mapper used for converting TeamEty object to TeamDto object
  */
-@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR, componentModel = "spring")
 public interface TeamMapper {
 
     TeamMapper INSTANCE = Mappers.getMapper(TeamMapper.class);
