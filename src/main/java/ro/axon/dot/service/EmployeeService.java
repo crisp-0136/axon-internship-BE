@@ -128,46 +128,6 @@ public class EmployeeService {
         employeeRepository.save(employeeEty);
     }
 
-    @Transactional
-    public void deleteLeaveRequest(String userId, Long leaveReqId) {
-        Optional<EmployeeEty> optionalEmployeeEty = employeeRepository.findById(userId);
-        Optional<LeaveReqEty> optionalLeaveReqEty = leaveReqRepository.findById(leaveReqId);
-
-        if(optionalEmployeeEty.isEmpty())
-            throw new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND);
-
-        if(optionalLeaveReqEty.isEmpty())
-            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_NOT_FOUND);
-
-        EmployeeEty employeeEty = optionalEmployeeEty.get();
-        LeaveReqEty leaveReqEty = optionalLeaveReqEty.get();
-
-        if(!leaveReqEty.getEmployeeEty().getEmployeeId().equals(employeeEty.getEmployeeId())) {
-            throw new BusinessException(BusinessErrorCode.COMBINATION_NOT_FOUND);
-        }
-
-        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.REJECTED)){
-            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_REJECTED);
-        }
-
-        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.APPROVED)){
-
-            LocalDate currentDate = LocalDate.now();
-            LocalDate leaveReqStartDate = leaveReqEty.getStartDate();
-
-            if(leaveReqStartDate.getYear() < currentDate.getYear() || (
-                    leaveReqStartDate.getYear() == currentDate.getYear() &&
-                            leaveReqStartDate.getMonthValue() < currentDate.getMonthValue())) {
-
-                throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_APPROVED_IN_PAST);
-            }
-        }
-
-        employeeEty.removeLeaveReqEty(leaveReqEty);
-        employeeRepository.save(employeeEty);
-    }
-
-
     @Transactional(readOnly = true)
     public List<EmployeeDto> getEmployees(String name) {
         List<EmployeeEty> employees = employeeRepository.findByName(name);
