@@ -56,7 +56,7 @@ public class LeaveReqService {
 
         int workingDays = getNoOfWorkingDays(updateLeaveReqDTO.getStartDate(), updateLeaveReqDTO.getEndDate());
 
-        if(!hasSufficientYearlyDaysOff(employeeId, workingDays, LocalDate.now().getYear(), leaveReqId)){
+        if(!hasSufficientYearlyDaysOff(employeeId, workingDays, updateLeaveReqDTO.getStartDate().getYear(), leaveReqId)){
             throw new BusinessException(BusinessErrorCode.INSUFFICIENT_YEARLY_DAYS_OFF);
         }
 
