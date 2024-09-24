@@ -265,8 +265,7 @@ public class LeaveReqService {
             throw new BusinessException(BusinessErrorCode.LEAVE_REQ_PERIOD_NOT_IN_SAME_YEAR);
         }
 
-        if(startDate.isBefore(LocalDate.of(
-                LocalDate.now().getYear(), LocalDate.now().getMonthValue(), 1))) {
+        if(startDate.isBefore(LocalDate.now())) {
             throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_PERIOD_IN_PAST);
         }
     }
