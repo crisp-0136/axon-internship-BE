@@ -9,15 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import ro.axon.dot.domain.*;
 import ro.axon.dot.domain.enums.EmpYearlyDaysOffHistType;
 import ro.axon.dot.domain.enums.LeaveRequestStatus;
+import ro.axon.dot.domain.enums.LeaveRequestType;
 import ro.axon.dot.domain.enums.Status;
 import ro.axon.dot.domain.repositories.*;
 import ro.axon.dot.exception.BusinessErrorCode;
 import ro.axon.dot.exception.BusinessException;
 import ro.axon.dot.mapper.EmployeeMapper;
-import ro.axon.dot.model.AddEmployeeDto;
-import ro.axon.dot.model.EmployeeDto;
-import ro.axon.dot.model.TeamDto;
-import ro.axon.dot.model.UpdateEmployeeDto;
+import ro.axon.dot.model.*;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
@@ -164,5 +162,27 @@ public class EmployeeService {
         }
 
         return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public RemainingDaysOffDto getRemainingDaysOff(String employeeId) {
+
+        var employeeEty = employeeRepository.findById(employeeId).orElseThrow(()
+                -> new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND));
+
+        var freeDays = employeeEty.getEmpYearlyDaysOffEties().stream()
+                .filter(daysOff -> daysOff.getYear() == LocalDate.now().getYear()).findFirst()
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.DAYS_OFF_NOT_FOUND));
+
+        var usedDays = employeeEty.getLeaveRequestEties().stream()
+                .filter(req -> req.getStatus() == LeaveRequestStatus.APPROVED ||
+                        req.getStatus() == LeaveRequestStatus.PENDING)
+                .filter(req -> req.getStartDate().getYear() == LocalDate.now().getYear())
+                .mapToInt(LeaveReqEty::getNoDays).sum();
+
+        RemainingDaysOffDto remainingDays = new RemainingDaysOffDto();
+        remainingDays.setRemainingDays(freeDays.getTotalNoDays() - usedDays);
+
+        return remainingDays;
     }
 }

@@ -83,4 +83,10 @@ public class EmployeeApi {
         List<EmployeeDto> employees = employeeService.getEmployees(name);
         return ResponseEntity.ok(employees);
     }
+
+    @GetMapping("/{employeeId}/remaining-days-off")
+    public ResponseEntity<RemainingDaysOffDto> getRemainingDaysOff(@PathVariable String employeeId) {
+        RemainingDaysOffDto remainingDaysOff = employeeService.getRemainingDaysOff(employeeId);
+        return ResponseEntity.ok(remainingDaysOff);
+    }
 }
