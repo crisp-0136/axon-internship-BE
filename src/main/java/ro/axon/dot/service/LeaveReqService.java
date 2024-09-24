@@ -19,6 +19,8 @@ import ro.axon.dot.model.UpdateLeaveReqDTO;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,7 +56,7 @@ public class LeaveReqService {
 
         int workingDays = getNoOfWorkingDays(updateLeaveReqDTO.getStartDate(), updateLeaveReqDTO.getEndDate());
 
-        if(!hasSufficientYearlyDaysOff(employeeId, workingDays, LocalDate.now().getYear())){
+        if(!hasSufficientYearlyDaysOff(employeeId, workingDays, LocalDate.now().getYear(), leaveReqId)){
             throw new BusinessException(BusinessErrorCode.INSUFFICIENT_YEARLY_DAYS_OFF);
         }
 
@@ -132,15 +134,28 @@ public class LeaveReqService {
         return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 
-    private boolean hasSufficientYearlyDaysOff(String employeeId, int noOfDays, int year){
+    private boolean hasSufficientYearlyDaysOff(String employeeId, int noOfDays, int year, Long ... ignoreLeaveReqIds){
         EmployeeEty employeeEty = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND));
+
+        List<LeaveReqEty>  leaveReqEtyList = employeeEty.getLeaveRequestEties().stream()
+                .filter(obj -> obj.getStatus() != LeaveRequestStatus.REJECTED).toList();
+
+        List<Long> ignoreLeaveReqIdsList = Arrays.stream(ignoreLeaveReqIds).toList();
+
+        int noOfDaysFromOtherLeaveReqs = 0;
+
+        for (LeaveReqEty leaveReqEty : leaveReqEtyList) {
+            if(!ignoreLeaveReqIdsList.contains(leaveReqEty.getId())){
+                noOfDaysFromOtherLeaveReqs += leaveReqEty.getNoDays();
+            }
+        }
 
         Optional<EmpYearlyDaysOffEty> empYearlyDaysOffEty = employeeEty.getEmpYearlyDaysOffEties()
                 .stream().filter(obj -> obj.getYear() == year).findFirst();
 
         return empYearlyDaysOffEty.isPresent() &&
-                empYearlyDaysOffEty.get().getTotalNoDays() >= noOfDays;
+                empYearlyDaysOffEty.get().getTotalNoDays() >= noOfDays + noOfDaysFromOtherLeaveReqs;
     }
 
     private void validateLeaveReqPeriod(LocalDate startDate, LocalDate endDate){
