@@ -50,7 +50,7 @@ public enum BusinessErrorCode {
 
     LEAVE_REQUEST_PERIOD_IN_PAST(
             formatErrorCode("0009", "400"),
-            "The start date must not be earlier than the first day of the current month.",
+            "The start date must not be earlier than current date.",
             HttpStatus.BAD_REQUEST),
 
     INSUFFICIENT_DAYS_OFF(
