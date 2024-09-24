@@ -155,6 +155,8 @@ public class LeaveReqService {
             throw new BusinessException(BusinessErrorCode.INVALID_LEAVE_REQUEST_V);
         }
 
+        checkForOverlappingRequests(leaveReqEty.getEmployeeEty(), updateLeaveReqDTO.getStartDate(), updateLeaveReqDTO.getEndDate());
+
         int workingDays = getNoOfWorkingDays(updateLeaveReqDTO.getStartDate(), updateLeaveReqDTO.getEndDate());
 
         if(!hasSufficientYearlyDaysOff(employeeId, workingDays, updateLeaveReqDTO.getStartDate().getYear(), leaveReqId)){
