@@ -10,6 +10,7 @@ import ro.axon.dot.domain.repositories.*;
 import ro.axon.dot.exception.BusinessErrorCode;
 import ro.axon.dot.exception.BusinessException;
 import ro.axon.dot.mapper.LeaveReqMapper;
+import ro.axon.dot.model.LeaveReqDetailsList;
 import ro.axon.dot.model.LeaveReqDto;
 import ro.axon.dot.domain.LegallyDaysOffEty;
 
@@ -62,6 +63,37 @@ public class LeaveReqService {
 
         leaveRequestRepository.save(leaveRequest);
     }
+
+    @Transactional
+    public LeaveReqDetailsList getLeaveRequests(String employeeId, LocalDate startDate, LocalDate endDate) {
+        // Fetch employee by employeeId
+        EmployeeEty employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND));
+
+        // Fetch leave requests based on employee
+        List<LeaveReqEty> leaveRequests = leaveRequestRepository.findByEmployeeEty(employee);
+
+        // Filter by startDate and endDate if provided
+        if (startDate != null) {
+            leaveRequests = leaveRequests.stream()
+                    .filter(req -> !req.getStartDate().isBefore(startDate))
+                    .collect(Collectors.toList());
+        }
+        if (endDate != null) {
+            leaveRequests = leaveRequests.stream()
+                    .filter(req -> !req.getEndDate().isAfter(endDate))
+                    .collect(Collectors.toList());
+        }
+
+        // Map to DTO and create LeaveReqDetailsList
+        LeaveReqDetailsList leaveReqDetailsList = new LeaveReqDetailsList();
+        leaveReqDetailsList.setItems(leaveRequests.stream()
+                .map(leaveReqMapper::toDto)
+                .collect(Collectors.toList()));
+
+        return leaveReqDetailsList;
+    }
+
 
     private void validateLeaveRequest(EmployeeEty employeeEty, LeaveReqDto leaveReqDto) {
         if (leaveReqDto.getStartDate().getYear() != leaveReqDto.getEndDate().getYear()) {

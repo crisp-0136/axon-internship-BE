@@ -25,4 +25,6 @@ public interface LeaveReqRepository extends
                                                 @Param("type") LeaveRequestType type);
 
     List<LeaveReqEty> findByEmployeeEtyAndStatusIn(EmployeeEty employee, List<LeaveRequestStatus> statuses);
+    List<LeaveReqEty> findByEmployeeEty(EmployeeEty employee);
+
 }
