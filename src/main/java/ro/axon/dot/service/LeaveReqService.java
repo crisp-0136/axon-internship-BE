@@ -191,17 +191,10 @@ public class LeaveReqService {
             throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_REJECTED);
         }
 
-        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.APPROVED)){
+        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.APPROVED) &&
+            leaveReqEty.getStartDate().isBefore(LocalDate.now())){
 
-            LocalDate currentDate = LocalDate.now();
-            LocalDate leaveReqStartDate = leaveReqEty.getStartDate();
-
-            if(leaveReqStartDate.getYear() < currentDate.getYear() || (
-                    leaveReqStartDate.getYear() == currentDate.getYear() &&
-                            leaveReqStartDate.getMonthValue() < currentDate.getMonthValue())) {
-
-                throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_APPROVED_IN_PAST);
-            }
+            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_APPROVED_IN_PAST);
         }
 
         return leaveReqEty;
