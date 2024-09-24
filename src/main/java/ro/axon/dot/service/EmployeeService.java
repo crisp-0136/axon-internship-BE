@@ -15,13 +15,17 @@ import ro.axon.dot.exception.BusinessErrorCode;
 import ro.axon.dot.exception.BusinessException;
 import ro.axon.dot.mapper.EmployeeMapper;
 import ro.axon.dot.model.AddEmployeeDto;
+import ro.axon.dot.model.EmployeeDto;
+import ro.axon.dot.model.TeamDto;
 import ro.axon.dot.model.UpdateEmployeeDto;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -161,5 +165,44 @@ public class EmployeeService {
 
         employeeEty.removeLeaveReqEty(leaveReqEty);
         employeeRepository.save(employeeEty);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<EmployeeDto> getEmployees(String name) {
+        List<EmployeeEty> employees = employeeRepository.findByName(name);
+        return employees.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private EmployeeDto convertToDTO(EmployeeEty employee) {
+        EmployeeDto dto = new EmployeeDto();
+        dto.setId(employee.getId());
+        dto.setFirstName(employee.getFirstName());
+        dto.setLastName(employee.getLastName());
+        dto.setEmail(employee.getEmail());
+        dto.setCrtUsr(employee.getCrtUsr());
+        dto.setCrtTms(employee.getCrtTms());
+        dto.setMdfUsr(employee.getMdfUsr());
+        dto.setMdfTms(employee.getMdfTms());
+        dto.setRole(employee.getRole());
+        dto.setStatus(employee.getStatus().name());
+        dto.setContractStartDate(employee.getContractStartDate());
+        dto.setTotalVacationDays(employee.getEmpYearlyDaysOffEties().size()); // Adjust this as necessary
+        dto.setUsername(employee.getUsername());
+
+        if (employee.getTeam() != null) {
+            TeamDto teamDTO = new TeamDto();
+            teamDTO.setId(employee.getTeam().getId());
+            teamDTO.setName(employee.getTeam().getName());
+            teamDTO.setCrtUsr(employee.getTeam().getCrtUsr());
+            teamDTO.setCrtTms(employee.getTeam().getCrtTms());
+            teamDTO.setMdfUsr(employee.getTeam().getMdfUsr());
+            teamDTO.setMdfTms(employee.getTeam().getMdfTms());
+            teamDTO.setStatus(employee.getTeam().getStatus());
+
+            dto.setTeamDetails(teamDTO);
+        }
+
+        return dto;
     }
 }

@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ro.axon.dot.model.AddEmployeeDto;
-import ro.axon.dot.model.LeaveReqDetailsList;
-import ro.axon.dot.model.LeaveReqDto;
-import ro.axon.dot.model.UpdateEmployeeDto;
+import ro.axon.dot.model.*;
 import ro.axon.dot.service.EmployeeService;
 import ro.axon.dot.service.LeaveReqService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,4 +69,9 @@ public class EmployeeApi {
     }
 
 
+    @GetMapping
+    public ResponseEntity<List<EmployeeDto>> getEmployees(@RequestParam(required = false) String name) {
+        List<EmployeeDto> employees = employeeService.getEmployees(name);
+        return ResponseEntity.ok(employees);
+    }
 }

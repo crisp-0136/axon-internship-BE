@@ -67,7 +67,7 @@ public class EmployeeEty extends SrgKeyEntityTml<String> {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employeeEty", orphanRemoval = true)
     private Set<LeaveReqEty> leaveRequestEties  = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employeeEty")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employeeEty", fetch = FetchType.EAGER)
     private Set<EmpYearlyDaysOffEty> empYearlyDaysOffEties = new HashSet<>();
 
     @ManyToOne
