@@ -115,9 +115,11 @@ public class LeaveReqService {
         }
 
         int workingDays = 0;
+        Set<LocalDate> legallyDaysOff = legallyDaysOffRepository.findAll()
+                .stream().map(LegallyDaysOffEty::getDate).collect(Collectors.toSet());
 
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-            if (!(isWeekendDay(date) || isLegallyDayOff(date)) ) {
+            if (!(isWeekendDay(date) || legallyDaysOff.contains(date)) ) {
                 workingDays++;
             }
         }
@@ -128,13 +130,6 @@ public class LeaveReqService {
     private boolean isWeekendDay(LocalDate date) {
         DayOfWeek dayOfWeek = date.getDayOfWeek();
         return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
-    }
-
-    private boolean isLegallyDayOff(LocalDate date) {
-        Set<LocalDate> dates = legallyDaysOffRepository.findAll()
-                .stream().map(LegallyDaysOffEty::getDate).collect(Collectors.toSet());
-
-        return dates.contains(date);
     }
 
     private boolean hasSufficientYearlyDaysOff(String employeeId, int noOfDays, int year){
