@@ -164,8 +164,8 @@ public class EmployeeService {
         return dto;
     }
 
-    @Transactional
-    public ResponseEntity<RemainingDaysOffDto> getRemainingDaysOff(String employeeId) {
+    @Transactional(readOnly = true)
+    public RemainingDaysOffDto getRemainingDaysOff(String employeeId) {
 
         var employeeEty = employeeRepository.findById(employeeId).orElseThrow(()
                 -> new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND));
@@ -175,14 +175,14 @@ public class EmployeeService {
                 .orElseThrow(() -> new BusinessException(BusinessErrorCode.DAYS_OFF_NOT_FOUND));
 
         var usedDays = employeeEty.getLeaveRequestEties().stream()
-                .filter(req -> req.getStatus() == LeaveRequestStatus.APPROVED)
-                .filter(req -> req.getType() == LeaveRequestType.VACATION)
+                .filter(req -> req.getStatus() == LeaveRequestStatus.APPROVED ||
+                        req.getStatus() == LeaveRequestStatus.PENDING)
                 .filter(req -> req.getStartDate().getYear() == LocalDate.now().getYear())
                 .mapToInt(LeaveReqEty::getNoDays).sum();
 
         RemainingDaysOffDto remainingDays = new RemainingDaysOffDto();
         remainingDays.setRemainingDays(freeDays.getTotalNoDays() - usedDays);
 
-        return ResponseEntity.ok(remainingDays);
+        return remainingDays;
     }
 }
