@@ -43,14 +43,14 @@ public enum BusinessErrorCode {
             "Data associated to the given combination of identifiers does not exist.",
             HttpStatus.BAD_REQUEST),
 
-    LEAVE_DIFFERENT_YEARS(
+    LEAVE_REQ_PERIOD_NOT_IN_SAME_YEAR(
             formatErrorCode("0008", "400"),
-            "Leave request across different years is not allowed",
+            "Start date and end date must be in same year.",
             HttpStatus.BAD_REQUEST),
 
-    LEAVE_IN_PAST(
+    LEAVE_REQUEST_PERIOD_IN_PAST(
             formatErrorCode("0009", "400"),
-            "Cannot create leave request in the past",
+            "The start date must not be earlier than the first day of the current month.",
             HttpStatus.BAD_REQUEST),
 
     INSUFFICIENT_DAYS_OFF(
@@ -77,7 +77,12 @@ public enum BusinessErrorCode {
             formatErrorCode("0014", "400"),
             "The dates in this request overlap with a previously submitted leave request.",
             HttpStatus.BAD_REQUEST
-    );
+    ),
+
+    INVALID_LEAVE_REQUEST_V(
+            formatErrorCode("00015", "409"),
+            "Current leave request version is higher than the specified version.",
+            HttpStatus.CONFLICT);
 
 
     private final String errorCode;

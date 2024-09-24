@@ -13,12 +13,16 @@ import ro.axon.dot.mapper.LeaveReqMapper;
 import ro.axon.dot.model.LeaveReqDetailsList;
 import ro.axon.dot.model.LeaveReqDto;
 import ro.axon.dot.domain.LegallyDaysOffEty;
+import ro.axon.dot.model.UpdateLeaveReqDTO;
 
 import javax.transaction.Transactional;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,10 +46,9 @@ public class LeaveReqService {
                 .orElseThrow(() -> new BusinessException(BusinessErrorCode.DAYS_OFF_NOT_FOUND));
 
 
-        int effectiveLeaveDays = calculateEffectiveDaysRequested(leaveReqDto);
-        long totalDaysTaken = calculateTotalDaysTaken(employee);
+        int noOfWorkingDays = getNoOfWorkingDays(leaveReqDto.getStartDate(), leaveReqDto.getEndDate());
 
-        if (effectiveLeaveDays + totalDaysTaken > yearlyDaysOff.getTotalNoDays()) {
+        if (!hasSufficientYearlyDaysOff(employeeId, noOfWorkingDays, leaveReqDto.getStartDate().getYear())) {
             throw new BusinessException(BusinessErrorCode.INSUFFICIENT_DAYS_OFF);
         }
 
@@ -57,7 +60,7 @@ public class LeaveReqService {
         leaveRequest.setCrtTms(Instant.now());
         leaveRequest.setMdfUsr(employee.getUsername());
         leaveRequest.setMdfTms(Instant.now());
-        leaveRequest.setNoDays(effectiveLeaveDays);
+        leaveRequest.setNoDays(noOfWorkingDays);
 
         employee.getLeaveRequestEties().add(leaveRequest);
 
@@ -93,17 +96,8 @@ public class LeaveReqService {
 
 
     private void validateLeaveRequest(EmployeeEty employeeEty, LeaveReqDto leaveReqDto) {
-        if (leaveReqDto.getStartDate().getYear() != leaveReqDto.getEndDate().getYear()) {
-            throw new BusinessException(BusinessErrorCode.LEAVE_DIFFERENT_YEARS);
-        }
 
-        if (leaveReqDto.getEndDate().isBefore(leaveReqDto.getStartDate())) {
-            throw new BusinessException(BusinessErrorCode.END_DATE_BEFORE_START_DATE);
-        }
-
-        if (leaveReqDto.getStartDate().isBefore(LocalDate.now())) {
-            throw new BusinessException(BusinessErrorCode.LEAVE_IN_PAST);
-        }
+        validateLeaveReqPeriod(leaveReqDto.getStartDate(), leaveReqDto.getEndDate());
 
         checkForOverlappingRequests(employeeEty, leaveReqDto.getStartDate(), leaveReqDto.getEndDate());
 
@@ -142,53 +136,142 @@ public class LeaveReqService {
         }
     }
 
-    public int calculateEffectiveDaysRequested(LeaveReqDto leaveReqDto) {
+    @Transactional
+    public void deleteLeaveRequest(String employeeId, Long leaveReqId) {
 
-        List<LocalDate> legallyDaysOff = fetchLegallyDaysOff(leaveReqDto);
+        LeaveReqEty leaveReqEty = getLeaveRequest(employeeId, leaveReqId);
 
-        return (int) leaveReqDto.getStartDate().datesUntil(leaveReqDto.getEndDate().plusDays(1))
-                .filter(date -> {
-                    DayOfWeek dayOfWeek = date.getDayOfWeek();
-                    boolean isWeekend = (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY);
-                    boolean isLegalOff = legallyDaysOff.contains(date);
-
-                    return !(isWeekend || isLegalOff);
-                })
-                .count();
+        leaveRequestRepository.delete(leaveReqEty);
     }
 
-    private List<LocalDate> fetchLegallyDaysOff(LeaveReqDto leaveReqDto) {
-        LocalDate startDate = leaveReqDto.getStartDate();
-        LocalDate endDate = leaveReqDto.getEndDate();
+    @Transactional
+    public void updateLeaveRequest(String employeeId, Long leaveReqId, UpdateLeaveReqDTO updateLeaveReqDTO){
 
+        validateLeaveReqPeriod(updateLeaveReqDTO.getStartDate(), updateLeaveReqDTO.getEndDate());
 
-        List<String> yearMonths = startDate.datesUntil(endDate.plusDays(1))
-                .map(date -> date.toString().substring(0, 7))
-                .distinct()
-                .collect(Collectors.toList());
+        LeaveReqEty leaveReqEty = getLeaveRequest(employeeId, leaveReqId);
 
+        if(updateLeaveReqDTO.getV() < leaveReqEty.getV()){
+            throw new BusinessException(BusinessErrorCode.INVALID_LEAVE_REQUEST_V);
+        }
 
-        return legallyDaysOffRepository.findByPeriodIn(yearMonths)
-                .stream()
-                .map(LegallyDaysOffEty::getDate)
-                .collect(Collectors.toList());
+        int workingDays = getNoOfWorkingDays(updateLeaveReqDTO.getStartDate(), updateLeaveReqDTO.getEndDate());
+
+        if(!hasSufficientYearlyDaysOff(employeeId, workingDays, updateLeaveReqDTO.getStartDate().getYear(), leaveReqId)){
+            throw new BusinessException(BusinessErrorCode.INSUFFICIENT_DAYS_OFF);
+        }
+
+        leaveReqEty.setNoDays(workingDays);
+
+        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.APPROVED)){
+            leaveReqEty.setStatus(LeaveRequestStatus.PENDING);
+        }
+
+        leaveReqEty.setStartDate(updateLeaveReqDTO.getStartDate());
+        leaveReqEty.setEndDate(updateLeaveReqDTO.getEndDate());
+        leaveReqEty.setType(updateLeaveReqDTO.getType());
+        leaveReqEty.setDescription(updateLeaveReqDTO.getDescription());
+
+        leaveReqEty.setMdfUsr("initial.load");
+        leaveReqEty.setMdfTms(Instant.now());
+
+        leaveRequestRepository.save(leaveReqEty);
     }
 
-    private long calculateTotalDaysTaken(EmployeeEty employee) {
-        LocalDate currentYear = LocalDate.now();
-        LocalDate startOfYear = currentYear.withDayOfYear(1);
-        LocalDate endOfYear = currentYear.withDayOfYear(currentYear.lengthOfYear());
+    private LeaveReqEty getLeaveRequest(String employeeId, Long leaveReqId) {
 
-        List<LeaveReqEty> existingRequests = leaveRequestRepository.findByEmployeeEtyAndStatusIn(
-                employee,
-                List.of(LeaveRequestStatus.PENDING, LeaveRequestStatus.APPROVED),
-                startOfYear,
-                endOfYear
-        );
+        LeaveReqEty leaveReqEty = leaveRequestRepository.findById(leaveReqId)
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.LEAVE_REQUEST_NOT_FOUND));
 
-        return existingRequests.stream()
-                .mapToLong(LeaveReqEty::getNoDays)
-                .sum();
+        if(!employeeRepository.existsById(employeeId)) {
+            throw new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND);
+        }
+
+        if(!employeeRepository.existsById(leaveReqEty.getEmployeeEty().getEmployeeId())) {
+            throw new BusinessException(BusinessErrorCode.COMBINATION_NOT_FOUND);
+        }
+
+        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.REJECTED)){
+            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_REJECTED);
+        }
+
+        if(leaveReqEty.getStatus().equals(LeaveRequestStatus.APPROVED)){
+
+            LocalDate currentDate = LocalDate.now();
+            LocalDate leaveReqStartDate = leaveReqEty.getStartDate();
+
+            if(leaveReqStartDate.getYear() < currentDate.getYear() || (
+                    leaveReqStartDate.getYear() == currentDate.getYear() &&
+                            leaveReqStartDate.getMonthValue() < currentDate.getMonthValue())) {
+
+                throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_APPROVED_IN_PAST);
+            }
+        }
+
+        return leaveReqEty;
     }
 
+    private int getNoOfWorkingDays(LocalDate startDate, LocalDate endDate) {
+
+        if(startDate.isAfter(endDate)) {
+            throw new BusinessException(BusinessErrorCode.END_DATE_BEFORE_START_DATE);
+        }
+
+        int workingDays = 0;
+        Set<LocalDate> legallyDaysOff = legallyDaysOffRepository.findAll()
+                .stream().map(LegallyDaysOffEty::getDate).collect(Collectors.toSet());
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            if (!(isWeekendDay(date) || legallyDaysOff.contains(date)) ) {
+                workingDays++;
+            }
+        }
+
+        return workingDays;
+    }
+
+    private boolean isWeekendDay(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
+    }
+
+    private boolean hasSufficientYearlyDaysOff(String employeeId, int noOfDays, int year, Long ... ignoreLeaveReqIds){
+        EmployeeEty employeeEty = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.EMPLOYEE_NOT_FOUND));
+
+        List<LeaveReqEty>  leaveReqEtyList = employeeEty.getLeaveRequestEties().stream()
+                .filter(obj -> obj.getStatus() != LeaveRequestStatus.REJECTED &&
+                        obj.getStartDate().getYear() == year).toList();
+
+        List<Long> ignoreLeaveReqIdsList = Arrays.stream(ignoreLeaveReqIds).toList();
+
+        int noOfDaysFromOtherLeaveReqs = 0;
+
+        for (LeaveReqEty leaveReqEty : leaveReqEtyList) {
+            if(!ignoreLeaveReqIdsList.contains(leaveReqEty.getId())){
+                noOfDaysFromOtherLeaveReqs += leaveReqEty.getNoDays();
+            }
+        }
+
+        Optional<EmpYearlyDaysOffEty> empYearlyDaysOffEty = employeeEty.getEmpYearlyDaysOffEties()
+                .stream().filter(obj -> obj.getYear() == year).findFirst();
+
+        return empYearlyDaysOffEty.isPresent() &&
+                empYearlyDaysOffEty.get().getTotalNoDays() >= noOfDays + noOfDaysFromOtherLeaveReqs;
+    }
+
+    private void validateLeaveReqPeriod(LocalDate startDate, LocalDate endDate){
+        if(startDate.isAfter(endDate)){
+            throw new BusinessException(BusinessErrorCode.END_DATE_BEFORE_START_DATE);
+        }
+
+        if(startDate.getYear() != endDate.getYear()){
+            throw new BusinessException(BusinessErrorCode.LEAVE_REQ_PERIOD_NOT_IN_SAME_YEAR);
+        }
+
+        if(startDate.isBefore(LocalDate.of(
+                LocalDate.now().getYear(), LocalDate.now().getMonthValue(), 1))) {
+            throw new BusinessException(BusinessErrorCode.LEAVE_REQUEST_PERIOD_IN_PAST);
+        }
+    }
 }
