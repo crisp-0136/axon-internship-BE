@@ -21,6 +21,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -128,7 +129,7 @@ public class EmployeeService {
 
     @Transactional(readOnly = true)
     public List<EmployeeDto> getEmployees(String name) {
-        List<EmployeeEty> employees = employeeRepository.findByName(name);
+        List<EmployeeEty> employees = employeeRepository.findByNameIgnoreCase(name);
         return employees.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -143,9 +144,13 @@ public class EmployeeService {
         dto.setMdfUsr(employee.getMdfUsr());
         dto.setMdfTms(employee.getMdfTms());
         dto.setRole(employee.getRole());
-        dto.setStatus(employee.getStatus().name());
+        dto.setStatus(employee.getStatus());
         dto.setContractStartDate(employee.getContractStartDate());
-        dto.setTotalVacationDays(employee.getEmpYearlyDaysOffEties().size()); // Adjust this as necessary
+        dto.setV(employee.getV());
+        dto.setTotalVacationDays(
+                employee.getEmpYearlyDaysOffEties().stream()
+                        .filter(ety -> ety.getYear() == Year.now().getValue())
+                        .findFirst().map(EmpYearlyDaysOffEty::getTotalNoDays).orElse(0));
         dto.setUsername(employee.getUsername());
 
         if (employee.getTeam() != null) {

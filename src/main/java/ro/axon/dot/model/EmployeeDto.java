@@ -1,6 +1,7 @@
 package ro.axon.dot.model;
 
 import lombok.Data;
+import ro.axon.dot.domain.enums.Status;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -16,8 +17,9 @@ public class EmployeeDto {
     private String mdfUsr;
     private Instant mdfTms;
     private String role;
-    private String status;
+    private Status status;
     private LocalDate contractStartDate;
+    private Long v;
     private Integer totalVacationDays;
     private TeamDto teamDetails;
     private String username;
