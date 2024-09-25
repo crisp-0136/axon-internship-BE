@@ -129,6 +129,12 @@ public class EmployeeService {
 
     @Transactional(readOnly = true)
     public List<EmployeeDto> getEmployees(String name) {
+
+        if (name == null || name.isEmpty()) {
+            return employeeRepository.findAll().stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
         List<EmployeeEty> employees = employeeRepository.findByNameIgnoreCase(name);
         return employees.stream().map(this::convertToDTO).collect(Collectors.toList());
     }

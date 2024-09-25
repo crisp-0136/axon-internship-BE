@@ -78,7 +78,7 @@ public class EmployeeApi {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<EmployeeDtoList> getEmployees(@RequestParam(required = false) String name) {
         List<EmployeeDto> employees = employeeService.getEmployees(name);
         EmployeeDtoList employeeDtoList = new EmployeeDtoList();
