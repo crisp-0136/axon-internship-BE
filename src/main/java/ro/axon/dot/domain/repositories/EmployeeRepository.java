@@ -13,6 +13,6 @@ import java.util.List;
 public interface EmployeeRepository extends
     JpaRepository<EmployeeEty, String>,
     QuerydslPredicateExecutor<EmployeeEty>{
-    @Query("SELECT e FROM EmployeeEty e WHERE (:name IS NULL OR e.firstName LIKE %:name% OR e.lastName LIKE %:name%)")
-    List<EmployeeEty> findByName(@Param("name") String name);
+    @Query("SELECT e FROM EmployeeEty e WHERE LOWER(e.firstName) LIKE LOWER(CONCAT('%', :name, '%')) OR LOWER(e.lastName) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<EmployeeEty> findByNameIgnoreCase(@Param("name") String name);
 }

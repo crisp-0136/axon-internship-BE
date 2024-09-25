@@ -79,9 +79,11 @@ public class EmployeeApi {
     }
 
     @GetMapping
-    public ResponseEntity<List<EmployeeDto>> getEmployees(@RequestParam(required = false) String name) {
+    public ResponseEntity<EmployeeDtoList> getEmployees(@RequestParam(required = false) String name) {
         List<EmployeeDto> employees = employeeService.getEmployees(name);
-        return ResponseEntity.ok(employees);
+        EmployeeDtoList employeeDtoList = new EmployeeDtoList();
+        employeeDtoList.setItems(employees);
+        return ResponseEntity.ok(employeeDtoList);
     }
 
     @GetMapping("/{employeeId}/remaining-days-off")

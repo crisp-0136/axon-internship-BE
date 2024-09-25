@@ -14,5 +14,4 @@ public class TeamDto {
     private String mdfUsr;
     private Instant mdfTms;
     private Status status;
-
 }
